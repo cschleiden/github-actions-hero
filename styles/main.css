@@ -1,0 +1,15 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+body {
+  @apply bg-gray-700 p-8
+}
+
+h1 {
+  @apply text-4xl font-bold text-gray-100
+}
+
+button {
+  @apply p-2 bg-blue-300
+}
