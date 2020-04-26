@@ -4,16 +4,19 @@ enum StepType {
   Run,
 }
 
-interface RuntimeStep {
+export interface RuntimeStep {
   stepType: StepType;
 }
 
-interface RuntimeJob {
+export interface RuntimeJob {
   name: string;
 
   steps: RuntimeStep[];
+
+  state: any;
+  conclusion: any;
 }
 
-interface RuntimeModel {
+export interface RuntimeModel {
   jobs: RuntimeJob[];
 }

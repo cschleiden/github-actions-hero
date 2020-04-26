@@ -1,7 +1,7 @@
-.foo {
-    background: grey;
+.editorWrapper {
+    overflow-y: scroll;
 }
 
-.editor {
-    overflow-y: scroll;
+.editor :global(.CodeMirror-line) {
+    background: #444 !important;
 }

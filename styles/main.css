@@ -2,6 +2,9 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import "../node_modules/codemirror/lib/codemirror.css";
+@import "../node_modules/codemirror/theme/monokai.css";
+
 body {
   @apply bg-gray-700 p-8
 }
@@ -12,4 +15,8 @@ h1 {
 
 button {
   @apply p-2 bg-blue-300
+}
+
+.CodeMirror {
+    height: auto !important;
 }
