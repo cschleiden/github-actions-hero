@@ -1,13 +1,13 @@
 /** Generic map */
-type KeyValueMap = { [key: string]: string | number | boolean };
+export type KeyValueMap = { [key: string]: string | number | boolean };
 
-interface OnTypes {
+export interface OnTypes {
   types: string[];
 }
 
-type On = string | string[] | { [on: string]: OnTypes };
+export type On = string | string[] | { [on: string]: OnTypes };
 
-interface RunStep {
+export interface RunStep {
   run: string;
 
   "working-directory"?: string;
@@ -15,11 +15,11 @@ interface RunStep {
   shell?: any;
 }
 
-interface CheckoutStep {
+export interface UsesStep {
   uses: string;
 }
 
-type Step = {
+export type Step = {
   id?: string;
 
   if?: any;
@@ -33,9 +33,9 @@ type Step = {
   "continue-on-error"?: boolean;
 
   "timeout-minutes"?: number;
-} & (RunStep | CheckoutStep);
+} & (RunStep | UsesStep);
 
-interface Job {
+export interface Job {
   name?: string;
 
   needs?: string | string[];
@@ -50,7 +50,7 @@ interface Job {
 
   if?: any;
 
-  steps: Step;
+  steps: Step[];
 
   "timeout-minutes"?: number;
 
@@ -63,7 +63,7 @@ interface Job {
   services?: any;
 }
 
-interface Strategy {
+export interface Strategy {
   matrix: { [key: string]: string[] };
 
   "fail-fast"?: boolean;
@@ -71,9 +71,11 @@ interface Strategy {
   "max-parallel"?: number;
 }
 
-type EnvMap = KeyValueMap;
+export type EnvMap = KeyValueMap;
 
-interface Workflow {
+export type JobMap = { [jobId: string]: Job };
+
+export interface Workflow {
   name?: string;
 
   on: On;
@@ -82,5 +84,5 @@ interface Workflow {
 
   defaults?: any;
 
-  jobs: { [jobId: string]: Job };
+  jobs: JobMap;
 }

@@ -1,12 +1,26 @@
-enum StepType {
+export enum StepType {
   Uses,
   Docker,
   Run,
 }
 
-export interface RuntimeStep {
-  stepType: StepType;
+export interface RuntimeRunStep {
+  stepType: StepType.Run;
+
+  run: string;
 }
+
+export interface RuntimeUsesStep {
+  stepType: StepType.Uses;
+
+  uses: string;
+}
+
+export interface RuntimeDockerStep {
+  stepType: StepType.Docker;
+}
+
+export type RuntimeStep = RuntimeRunStep | RuntimeUsesStep | RuntimeDockerStep;
 
 export interface RuntimeJob {
   name: string;
@@ -18,5 +32,7 @@ export interface RuntimeJob {
 }
 
 export interface RuntimeModel {
+  name: string;
+
   jobs: RuntimeJob[];
 }
