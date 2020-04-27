@@ -24,7 +24,7 @@ function getRanges(token: string, workflow: string): Range[] {
   let start = 0;
   let editable = false;
   for (let i = 0; i < lines.length; ++i) {
-    const lineEditable = lines[i].startsWith(token);
+    const lineEditable = lines[i].indexOf(token) !== -1;
 
     if (editable != lineEditable) {
       // End region

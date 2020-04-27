@@ -4,17 +4,18 @@
 
 @import "../node_modules/codemirror/lib/codemirror.css";
 @import "../node_modules/codemirror/theme/monokai.css";
+@import "../node_modules/github-markdown-css/github-markdown.css";
 
 body {
-  @apply bg-gray-700 p-8
+  @apply bg-gray-300
 }
 
 h1 {
-  @apply text-4xl font-bold text-gray-100
+  @apply text-5xl font-bold m-6
 }
 
-button {
-  @apply p-2 bg-blue-300
+h2 {
+  @apply text-3xl font-bold
 }
 
 .CodeMirror {

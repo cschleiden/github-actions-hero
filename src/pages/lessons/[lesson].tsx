@@ -1,7 +1,16 @@
+import { ButtonPrimary, Flash, Pagination } from "@primer/components";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import Router from "next/router";
+import * as React from "react";
+import ReactMarkdown from "react-markdown";
+import { WorkflowExecution } from "../../components/workflowExecution";
 import { Lessons } from "../../lessons";
+import { lessonSolved } from "../../lessons/lesson";
+import { parse } from "../../lib/parser";
+import { run } from "../../lib/runner";
+import { RuntimeModel } from "../../lib/runtimeModel";
+import { Workflow } from "../../lib/workflow";
 
 const DynamicEditor = dynamic(
   () => import("../../components/workflowEditor").then((x) => x.Editor),
@@ -14,52 +23,110 @@ const DynamicEditor = dynamic(
 const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
   const l = Lessons[lesson - 1];
 
+  const [workflowExecution, setWorkflowExecution] = React.useState<
+    RuntimeModel | undefined
+  >();
+
+  const [outcome, setOutcome] = React.useState<boolean | undefined>();
+
+  const workflowInput = React.useRef(l.workflow);
+
+  React.useEffect(() => {
+    // This is not great, double renders. Change later.
+
+    // Lesson changed, reset
+    setOutcome(undefined);
+    setWorkflowExecution(undefined);
+  }, [lesson]);
+
   return (
-    <>
+    <div className="p-4">
       <div className="flex justify-center p-3">
         <h1>GitHub Actions 🦸</h1>
       </div>
-      <div className="flex justify-end">
-        <Link as={`/lessons/${lesson - 1}`} href="/lessons/[lesson]">
-          <button disabled={lesson <= 1}>&lt;</button>
-        </Link>
-        <button>Dropdown</button>
-        <Link as={`/lessons/${lesson + 1}`} href="/lessons/[lesson]">
-          <button>&gt;</button>
-        </Link>
+      <div className="flex items-center p-3">
+        <div className="flex-1 flex justify-start ">
+          <h2>Lesson {lesson}</h2>
+        </div>
+        <div className="flex flex-initial justify-end">
+          <Pagination
+            pageCount={Lessons.length}
+            currentPage={lesson}
+            marginPageCount={1}
+            surroundingPageCount={2}
+            onPageChange={(e, page) => {
+              Router.push(`/lessons/[lesson]`, `/lessons/${page}`);
+              e.preventDefault();
+            }}
+          />
+        </div>
       </div>
       <div className="flex">
-        <div className="flex flex-col flex-1 bg-blue-300 rounded-md rounded-r-none p-3">
-          <div>{l.description}</div>
+        <div className="flex flex-col flex-1 rounded-md rounded-r-none p-3">
+          <div className="markdown-body py-3">
+            <ReactMarkdown source={l.description} />
+          </div>
           <div>
             <DynamicEditor
               workflow={l.workflow}
-              change={(v) => console.log(v)}
+              change={(v) => (workflowInput.current = v)}
             />
           </div>
-          <div className="self-end">
-            <button className="p-2">Run workflow</button>
+          <div className="self-end py-3">
+            <ButtonPrimary
+              className="p-2"
+              onClick={async () => {
+                let parsedWorkflow: Workflow;
+                try {
+                  parsedWorkflow = parse(workflowInput.current);
+                } catch (e) {
+                  // TODO: Show in UI
+                  console.log("Parsing error", e);
+                }
+
+                // Run
+                try {
+                  const result = await run(
+                    l.triggers,
+                    `.github/workflows/lesson-${lesson}.yaml`,
+                    parsedWorkflow
+                  );
+
+                  setWorkflowExecution(result);
+
+                  setOutcome(lessonSolved(l, result));
+                } catch (e) {
+                  console.log("Runtime error", e);
+                }
+              }}
+            >
+              Run workflow
+            </ButtonPrimary>
           </div>
         </div>
         <div className="flex-1 bg-gray-300 rounded-md rounded-l-none p-3">
-          Chart
-          <svg
-            width="300"
-            height="100"
-            viewBox="0 0 603 228"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M330.5 29.5H582.5C593.546 29.5 602.5 38.4543 602.5 49.5V178.5C602.5 189.546 593.546 198.5 582.5 198.5H330.5C330.5 214.516 317.516 227.5 301.5 227.5C285.484 227.5 272.5 214.516 272.5 198.5H20.5C9.45432 198.5 0.5 189.546 0.5 178.5V49.5C0.5 38.4543 9.4543 29.5 20.5 29.5H272.5C272.5 13.4837 285.484 0.5 301.5 0.5C317.516 0.5 330.5 13.4837 330.5 29.5Z"
-              fill="#C4C4C4"
+          <div>
+            <WorkflowExecution
+              triggers={l.triggers}
+              executionModel={workflowExecution}
             />
-            <circle cx="302" cy="198" r="20" fill="#717171" />
-            <circle cx="302" cy="29" r="20" fill="#717171" />
-          </svg>
+          </div>
+          <div>
+            {outcome !== undefined ? (
+              outcome ? (
+                <Flash m={4} scheme="green">
+                  Success! Now move on to the next one.
+                </Flash>
+              ) : (
+                <Flash m={4} scheme="red">
+                  Please try again.
+                </Flash>
+              )
+            ) : null}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

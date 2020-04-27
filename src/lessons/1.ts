@@ -1,17 +1,24 @@
 import { Lesson } from "./lesson";
 
 export const Lesson1: Lesson = {
-  description:
-    "Let's create a workflow that runs for every push to the repository.",
+  title: `Run on push`,
+
+  description: `To start, let's create a workflow that runs on every \`push\` to the current repository.`,
 
   workflow: `name: Lesson 1
 
 @on: @
 
-steps:
-  lesson1:
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
     steps:
-    - runs: echo "Success!`,
+    - run: echo "Success!"`,
 
-  runtimeModel: {},
+  triggers: ["push"],
+
+  runtimeModel: {
+    name: "Lesson 1",
+    jobs: [],
+  },
 };

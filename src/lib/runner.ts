@@ -15,7 +15,7 @@ export async function run(
 
   // Check if any event matches
   if (!events.some((event) => match(event, workflow.on))) {
-    throw new RunError("No matching on found");
+    return result;
   }
 
   const orderedJobs = sortJobs(workflow.jobs);

@@ -9,15 +9,18 @@
     "test": "jest"
   },
   "dependencies": {
-    "@primer/components": "^18.0.0",
+    "@primer/components": "^18.1.0",
     "ajv": "^6.12.2",
     "codemirror": "^5.53.2",
     "codemirror-github-dark": "^0.4.1",
+    "github-markdown-css": "^4.0.0",
     "js-yaml": "^3.13.1",
     "next": "9.3.5",
     "react": "16.13.1",
     "react-codemirror2": "^7.1.0",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "react-markdown": "^4.3.1",
+    "styled-components": "^5.1.0"
   },
   "devDependencies": {
     "@types/codemirror": "0.0.91",
