@@ -81,6 +81,8 @@ export const Editor: React.FC<{
             viewportMargin: Infinity,
             readOnly: !r.editable,
             firstLineNumber: r.start + 1,
+            indentWithTabs: false,
+            smartIndent: true,
           }}
           onChange={(editor, data, value) => {
             const v = ranges.map((r) => r.text);
@@ -93,7 +95,7 @@ export const Editor: React.FC<{
               start += editors.current[i].getValue().split("\n").length;
             });
 
-            change(v.join("\n"));
+            change(v.join("\n").replace(/\t/g, " "));
           }}
         />
       ))}
