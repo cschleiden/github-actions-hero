@@ -1,5 +1,20 @@
 import * as React from "react";
-import { RuntimeModel } from "../lib/runtimeModel";
+import { RuntimeModel, RuntimeStep, StepType } from "../lib/runtimeModel";
+
+export const Step: React.FC<{
+  step: RuntimeStep;
+}> = ({ step }) => {
+  switch (step.stepType) {
+    case StepType.Run:
+      return (
+        <div className="p-1 text-sm">
+          <code>$ {step.run}</code>
+        </div>
+      );
+  }
+
+  return <div>Step</div>;
+};
 
 export const WorkflowExecution: React.FC<{
   triggers: string[];
@@ -88,7 +103,9 @@ export const WorkflowExecution: React.FC<{
             <div className="p-2">
               <ul>
                 {job.steps.map((step) => (
-                  <li>{step.stepType}</li>
+                  <li>
+                    <Step step={step} />
+                  </li>
                 ))}
               </ul>
             </div>
