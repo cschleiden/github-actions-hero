@@ -1,4 +1,3 @@
-import { Label } from "@primer/components";
 import * as React from "react";
 import { RuntimeModel } from "../lib/runtimeModel";
 
@@ -7,12 +6,93 @@ export const WorkflowExecution: React.FC<{
   executionModel: RuntimeModel;
 }> = ({ triggers, executionModel }) => {
   return (
-    <div>
-      <div className="triggers">
+    <div className="bg-gray-300 p-3">
+      <div className="triggers py-2">
         {triggers.map((t) => (
-          <Label variant="large" key={t}>
+          <div
+            key={t}
+            className="border border-gray-500 rounded bg-gray-500 shadow relative p-3"
+            style={{ width: "240px" }}
+          >
             {t}
-          </Label>
+
+            <div
+              className="absolute rounded-b-full shadow bg-gray-500 border border-gray-500 border-t-0"
+              style={{
+                width: "20px",
+                height: "10px",
+                bottom: "-9.5px",
+                right: "20px",
+              }}
+            >
+              <div
+                className="absolute bg-gray-200 rounded-full"
+                style={{
+                  bottom: "4px",
+                  left: "4px",
+                  width: "10px",
+                  height: "10px",
+                }}
+              ></div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="my-6">
+        {executionModel?.jobs.map((job) => (
+          <div
+            className="border border-gray-500 rounded bg-white shadow relative"
+            style={{ width: "240px" }}
+          >
+            <div
+              className="absolute bg-gray-200 rounded-t-full border border-b-0 border-gray-500"
+              style={{
+                width: "20px",
+                height: "10px",
+                top: "-10px",
+                left: "20px",
+              }}
+            >
+              <div
+                className="absolute bg-gray-600 rounded-full"
+                style={{
+                  top: "4px",
+                  left: "4px",
+                  width: "10px",
+                  height: "10px",
+                }}
+              ></div>
+            </div>
+            <div
+              className="absolute rounded-b-full shadow bg-white border border-t-0"
+              style={{
+                width: "20px",
+                height: "10px",
+                bottom: "-9.5px",
+                left: "20px",
+              }}
+            >
+              <div
+                className="absolute bg-blue-400 rounded-full"
+                style={{
+                  bottom: "4px",
+                  left: "4px",
+                  width: "10px",
+                  height: "10px",
+                }}
+              ></div>
+            </div>
+            <div className="p-2 bg-gray-200 rounded rounded-b-none text-center font-bold">
+              {job.name}
+            </div>
+            <div className="p-2">
+              <ul>
+                {job.steps.map((step) => (
+                  <li>{step.stepType}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         ))}
       </div>
       <div>

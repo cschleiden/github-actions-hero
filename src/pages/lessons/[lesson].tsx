@@ -104,7 +104,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
             </ButtonPrimary>
           </div>
         </div>
-        <div className="flex-1 bg-gray-300 rounded-md rounded-l-none p-3">
+        <div className="flex-1 bg-gray-300 rounded-md rounded-l-none">
           <div>
             <WorkflowExecution
               triggers={l.triggers}

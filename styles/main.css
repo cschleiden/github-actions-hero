@@ -7,7 +7,7 @@
 @import "../node_modules/github-markdown-css/github-markdown.css";
 
 body {
-  @apply bg-gray-300
+  @apply bg-white
 }
 
 h1 {
