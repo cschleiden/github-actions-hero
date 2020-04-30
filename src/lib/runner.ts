@@ -3,11 +3,11 @@ import { Job, JobMap, On, Step, Workflow } from "./workflow";
 
 export class RunError extends Error {}
 
-export async function run(
+export function run(
   events: string[],
   workflowFilename: string,
   workflow: Workflow
-): Promise<RuntimeModel> {
+): RuntimeModel {
   const result: RuntimeModel = {
     name: workflow.name || workflowFilename,
     jobs: [],
@@ -19,7 +19,7 @@ export async function run(
   }
 
   const orderedJobs = sortJobs(workflow.jobs);
-  for (const jobId of orderedJobs) {
+  for (const { jobId, level } of orderedJobs) {
     const jobDef = workflow.jobs[jobId];
 
     result.jobs.push({
@@ -27,32 +27,49 @@ export async function run(
       steps: executeSteps(jobDef.steps),
       state: "finished",
       conclusion: "success",
+      level,
     });
   }
 
   return result;
 }
 
-function sortJobs(jobs: JobMap): string[] {
+function sortJobs(jobs: JobMap): { jobId: string; level: number }[] {
   const toNeeds = (job: Job): string[] =>
     Array.isArray(job.needs) ? job.needs : !!job.needs ? [job.needs] : [];
 
-  const result: string[] = [];
+  const result: { jobId: string; level: number }[] = [];
 
   // Add nodes without dependencies to the queue
-  const s = Object.keys(jobs).filter((jobId) => {
-    const job = jobs[jobId];
-    return toNeeds(job).length === 0;
-  });
+  const s: (string | null)[] = Object.keys(jobs).filter(
+    (jobId) => toNeeds(jobs[jobId]).length === 0
+  );
+  s.push(null);
   const done = new Set<string>();
 
+  let level = 0;
   while (s.length > 0) {
     const n = s.shift();
-    result.push(n);
+
+    if (n == null) {
+      if (s.length == 0) {
+        break;
+      }
+
+      ++level;
+      s.push(null);
+      continue;
+    }
+
+    result.push({
+      jobId: n,
+      level,
+    });
     done.add(n);
 
     // This unblocks all jobs that depend on n
     for (const jobId of Object.keys(jobs)) {
+      // If job is already done, or already in the queue, skip.
       if (done.has(jobId) || s.some((x) => x === jobId)) {
         continue;
       }

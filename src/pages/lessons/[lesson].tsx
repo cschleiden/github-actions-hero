@@ -1,4 +1,4 @@
-import { ButtonPrimary, Flash, Pagination } from "@primer/components";
+import { Pagination } from "@primer/components";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Router from "next/router";
@@ -23,27 +23,40 @@ const DynamicEditor = dynamic(
 const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
   const l = Lessons[lesson - 1];
 
-  const [workflowExecution, setWorkflowExecution] = React.useState<
-    RuntimeModel | undefined
-  >();
+  const [input, setInput] = React.useState(l.workflow);
 
-  const [outcome, setOutcome] = React.useState<boolean | undefined>();
+  let parsedWorkflow: Workflow;
+  let outcome: boolean | undefined;
 
-  const workflowInput = React.useRef(l.workflow);
+  try {
+    parsedWorkflow = parse(input);
+  } catch (e) {
+    // TODO: Show in UI
+    console.log("Parsing error", e);
+  }
 
-  React.useEffect(() => {
-    // This is not great, double renders. Change later.
+  let workflowExecution: RuntimeModel | undefined;
 
-    // Lesson changed, reset
-    setOutcome(undefined);
-    setWorkflowExecution(undefined);
-  }, [lesson]);
+  // Run
+  try {
+    const result = run(
+      l.triggers,
+      `.github/workflows/lesson-${lesson}.yaml`,
+      parsedWorkflow
+    );
+
+    workflowExecution = result;
+    outcome = lessonSolved(l, result);
+  } catch (e) {
+    console.log("Runtime error", e);
+  }
 
   return (
     <div className="p-4">
       <div className="flex justify-center p-3">
         <h1>GitHub Actions 🦸</h1>
       </div>
+      {/* Header */}
       <div className="flex items-center p-3">
         <div className="flex-1 flex justify-start ">
           <h2>Lesson {lesson}</h2>
@@ -61,68 +74,24 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
           />
         </div>
       </div>
-      <div className="flex">
-        <div className="flex flex-col flex-1 rounded-md rounded-r-none p-3">
-          <div className="markdown-body py-3">
-            <ReactMarkdown source={l.description} />
-          </div>
-          <div>
-            <DynamicEditor
-              workflow={l.workflow}
-              change={(v) => (workflowInput.current = v)}
-            />
-          </div>
-          <div className="self-end py-3">
-            <ButtonPrimary
-              className="p-2"
-              onClick={async () => {
-                let parsedWorkflow: Workflow;
-                try {
-                  parsedWorkflow = parse(workflowInput.current);
-                } catch (e) {
-                  // TODO: Show in UI
-                  console.log("Parsing error", e);
-                }
 
-                // Run
-                try {
-                  const result = await run(
-                    l.triggers,
-                    `.github/workflows/lesson-${lesson}.yaml`,
-                    parsedWorkflow
-                  );
-
-                  setWorkflowExecution(result);
-
-                  setOutcome(lessonSolved(l, result));
-                } catch (e) {
-                  console.log("Runtime error", e);
-                }
-              }}
-            >
-              Run workflow
-            </ButtonPrimary>
-          </div>
+      {/* Lesson */}
+      <div className="flex flex-col">
+        <div className="markdown-body py-3">
+          <ReactMarkdown source={l.description} />
         </div>
-        <div className="flex-1 bg-gray-300 rounded-md rounded-l-none">
-          <div>
-            <WorkflowExecution
-              triggers={l.triggers}
-              executionModel={workflowExecution}
-            />
+
+        <div className="flex flex-row">
+          <div className="flex flex-col flex-1 rounded-md rounded-r-none">
+            <DynamicEditor workflow={l.workflow} change={(v) => setInput(v)} />
           </div>
-          <div>
-            {outcome !== undefined ? (
-              outcome ? (
-                <Flash m={4} scheme="green">
-                  Success! Now move on to the next one.
-                </Flash>
-              ) : (
-                <Flash m={4} scheme="red">
-                  Please try again.
-                </Flash>
-              )
-            ) : null}
+          <div className="flex-1 bg-gray-300 rounded-md rounded-l-none">
+            <div>
+              <WorkflowExecution
+                triggers={l.triggers}
+                executionModel={workflowExecution}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -29,6 +29,8 @@ export interface RuntimeJob {
 
   state: any;
   conclusion: any;
+
+  level: number;
 }
 
 export interface RuntimeModel {
