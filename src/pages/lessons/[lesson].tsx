@@ -1,4 +1,4 @@
-import { Pagination } from "@primer/components";
+import { ButtonPrimary, Flash, Pagination } from "@primer/components";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Router from "next/router";
@@ -52,48 +52,80 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex justify-center p-3">
-        <h1>GitHub Actions 🦸</h1>
-      </div>
-      {/* Header */}
-      <div className="flex items-center p-3">
-        <div className="flex-1 flex justify-start ">
-          <h2>Lesson {lesson}</h2>
+    <div className="flex flex-row">
+      <div
+        className="flex flex-col p-4"
+        style={{
+          minWidth: "40vw",
+        }}
+      >
+        <div className="flex justify-center p-3">
+          <h1>GitHub Actions 🦸</h1>
         </div>
-        <div className="flex flex-initial justify-end">
-          <Pagination
-            pageCount={Lessons.length}
-            currentPage={lesson}
-            marginPageCount={1}
-            surroundingPageCount={2}
-            onPageChange={(e, page) => {
-              Router.push(`/lessons/[lesson]`, `/lessons/${page}`);
-              e.preventDefault();
-            }}
-          />
+        {/* Header */}
+        <div className="flex items-center">
+          <div className="flex-1 flex justify-start ">
+            <h2>Lesson {lesson}</h2>
+          </div>
+          <div className="flex flex-initial justify-end">
+            <Pagination
+              pageCount={Lessons.length}
+              currentPage={lesson}
+              marginPageCount={1}
+              surroundingPageCount={2}
+              onPageChange={(e, page) => {
+                Router.push(`/lessons/[lesson]`, `/lessons/${page}`);
+                e.preventDefault();
+              }}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Lesson */}
-      <div className="flex flex-col">
-        <div className="markdown-body py-3">
+        <div className="markdown-body my-4">
           <ReactMarkdown source={l.description} />
         </div>
 
-        <div className="flex flex-row">
-          <div className="flex flex-col flex-1 rounded-md rounded-r-none">
-            <DynamicEditor workflow={l.workflow} change={(v) => setInput(v)} />
-          </div>
-          <div className="flex-1 bg-gray-300 rounded-md rounded-l-none">
-            <div>
-              <WorkflowExecution
-                triggers={l.triggers}
-                executionModel={workflowExecution}
-              />
-            </div>
-          </div>
+        <div className="flex flex-col flex-1">
+          <DynamicEditor workflow={l.workflow} change={(v) => setInput(v)} />
         </div>
+
+        <div>
+          {outcome !== undefined ? (
+            outcome ? (
+              <Flash scheme="green">
+                <div className="flex items-center">
+                  <div className="flex-1">
+                    Success! Now move on to the next one.
+                  </div>
+                  <div className="self-end">
+                    <ButtonPrimary
+                      onClick={() =>
+                        Router.push(
+                          `/lessons/[lesson]`,
+                          `/lessons/${lesson + 1}`
+                        )
+                      }
+                    >
+                      Next
+                    </ButtonPrimary>
+                  </div>
+                </div>
+              </Flash>
+            ) : (
+              <Flash scheme="red">Please try again.</Flash>
+            )
+          ) : null}
+        </div>
+      </div>
+
+      <div
+        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen p-12"
+        style={{ minWidth: "60vw" }}
+      >
+        <WorkflowExecution
+          triggers={l.triggers}
+          executionModel={workflowExecution}
+        />
       </div>
     </div>
   );

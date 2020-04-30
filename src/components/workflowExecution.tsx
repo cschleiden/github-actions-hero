@@ -44,11 +44,11 @@ export const WorkflowExecution: React.FC<{
 }> = ({ triggers, executionModel }) => {
   return (
     <div className="bg-gray-300 p-3">
-      <div className="triggers py-2">
+      <div className="triggers py-2 flex justify-center">
         {triggers.map((t) => (
           <div
             key={t}
-            className="border border-gray-500 rounded bg-gray-500 shadow relative p-3 text-center font-bold"
+            className="border border-gray-500 rounded bg-gray-500 shadow relative p-3 text-center font-bold  mr-12"
             style={{ width: "240px" }}
           >
             {t}
@@ -77,7 +77,7 @@ export const WorkflowExecution: React.FC<{
       </div>
       <div className="my-6">
         {groupJobs(executionModel?.jobs || []).map((jobs) => (
-          <div className="flex flex-row py-6">
+          <div className="flex flex-row justify-center py-6">
             {jobs.map((job) => (
               <div
                 className="border border-gray-500 rounded bg-white shadow relative mr-12"

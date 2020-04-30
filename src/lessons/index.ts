@@ -4,7 +4,7 @@ export const Lessons: Lesson[] = [
   {
     title: `Run on push`,
 
-    description: `To start, let's create a workflow that runs on every \`push\` to the current repository.`,
+    description: `Every workflow runs when a certain event is triggered. To start, let's create a workflow that runs on every \`push\` to the current repository.`,
 
     workflow: `name: Lesson 1
 
@@ -49,7 +49,7 @@ jobs:
   {
     title: `Run for multiple events`,
 
-    description: `Now, let's have our workflow \`echo\` "Hello world". `,
+    description: `Workflows can run arbitrary shell commands. Let's have our workflow execute the \`./scriptDeploy.sh\` script.`,
 
     workflow: `name: Lesson 3
 
@@ -65,7 +65,7 @@ jobs:
 
     triggers: ["push"],
 
-    success: `echo "Hello World"`,
+    success: `./scriptDeploy.sh`,
 
     runtimeModel: {
       name: "Lesson 3",
@@ -75,7 +75,7 @@ jobs:
   {
     title: `Multiple jobs`,
 
-    description: "Now, let's have out workflow say 'Success'. ",
+    description: "Now, let's have our workflow say 'Success'. ",
 
     workflow: `name: Lesson 3
 
