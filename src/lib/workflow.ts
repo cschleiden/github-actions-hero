@@ -48,7 +48,8 @@ export interface Job {
 
   defaults?: any;
 
-  if?: any;
+  // TODO: Expresion?
+  if?: string;
 
   steps: Step[];
 

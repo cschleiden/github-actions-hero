@@ -52,3 +52,6 @@ export interface RuntimeModel {
 
   jobs: RuntimeJob[];
 }
+
+// TODO: Set contexts etc.
+export interface RuntimeEnv {}

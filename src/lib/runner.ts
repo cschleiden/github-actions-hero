@@ -1,4 +1,10 @@
-import { Event, RuntimeModel, RuntimeStep, StepType } from "./runtimeModel";
+import {
+  Event,
+  RuntimeEnv,
+  RuntimeModel,
+  RuntimeStep,
+  StepType,
+} from "./runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "./workflow";
 
 export class RunError extends Error {}
@@ -14,17 +20,17 @@ export function run(
   };
 
   // Check if any event matches
-  if (!events.some((event) => match(event.event, workflow.on))) {
+  if (!events.some((event) => _match(event.event, workflow.on))) {
     return result;
   }
 
-  const orderedJobs = sortJobs(workflow.jobs);
+  const orderedJobs = _sortJobs(workflow.jobs);
   for (const { jobId, level } of orderedJobs) {
     const jobDef = workflow.jobs[jobId];
 
     result.jobs.push({
       name: jobDef.name || jobId,
-      steps: executeSteps(jobDef.steps),
+      steps: _executeSteps(jobDef.steps),
       state: "finished",
       conclusion: "success",
       level,
@@ -34,7 +40,7 @@ export function run(
   return result;
 }
 
-function sortJobs(jobs: JobMap): { jobId: string; level: number }[] {
+export function _sortJobs(jobs: JobMap): { jobId: string; level: number }[] {
   const toNeeds = (job: Job): string[] =>
     Array.isArray(job.needs) ? job.needs : !!job.needs ? [job.needs] : [];
 
@@ -85,7 +91,7 @@ function sortJobs(jobs: JobMap): { jobId: string; level: number }[] {
   return result;
 }
 
-function executeSteps(steps: Step[]): RuntimeStep[] {
+export function _executeSteps(steps: Step[]): RuntimeStep[] {
   return steps.map((step) => {
     if ("run" in step) {
       return {
@@ -105,7 +111,7 @@ function executeSteps(steps: Step[]): RuntimeStep[] {
   });
 }
 
-function match(event: string, on: On): boolean {
+export function _match(event: string, on: On): boolean {
   if (typeof on === "string") {
     return event === on;
   } else if (Array.isArray(on)) {
@@ -113,4 +119,11 @@ function match(event: string, on: On): boolean {
   } else {
     return !!on[event];
   }
+}
+
+export function _evaluateExpression(
+  expression: string,
+  env: RuntimeEnv
+): string | boolean | number | null {
+  return false;
 }
