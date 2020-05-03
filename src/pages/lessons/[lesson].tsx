@@ -35,18 +35,21 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
     console.log("Parsing error", e);
   }
 
-  let workflowExecution: RuntimeModel | undefined;
+  let workflowExecution: { [trigger: string]: RuntimeModel } = {};
 
   // Run
   try {
-    const result = run(
-      l.triggers,
-      `.github/workflows/lesson-${lesson}.yaml`,
-      parsedWorkflow
-    );
+    for (const trigger of l.triggers) {
+      const result = run(
+        [trigger],
+        `.github/workflows/lesson-${lesson}.yaml`,
+        parsedWorkflow
+      );
 
-    workflowExecution = result;
-    outcome = lessonSolved(l, result);
+      workflowExecution[trigger] = result;
+    }
+
+    outcome = lessonSolved(l, workflowExecution);
   } catch (e) {
     console.log("Runtime error", e);
   }
@@ -119,13 +122,16 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
       </div>
 
       <div
-        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen p-12"
+        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen p-12 flex flex-row"
         style={{ minWidth: "60vw" }}
       >
-        <WorkflowExecution
-          triggers={l.triggers}
-          executionModel={workflowExecution}
-        />
+        {l.triggers.map((trigger) => (
+          <WorkflowExecution
+            key={trigger}
+            triggers={[trigger]}
+            executionModel={workflowExecution?.[trigger]}
+          />
+        ))}
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ export interface Lesson {
    * When is this lesson solved. By default it checks for `echo "Success!"`. If given a string, that string needs to be
    * executed in a `run` step. Otherwise pass a custom evaluator.
    */
-  success?: string | ((r: RuntimeModel) => boolean);
+  success?: string | ((r: { [trigger: string]: RuntimeModel }) => boolean);
 
   /**
    *
@@ -36,18 +36,21 @@ export interface Lesson {
 
 export function lessonSolved(
   lesson: Lesson,
-  runtimeModel: RuntimeModel
+  r: { [trigger: string]: RuntimeModel }
 ): boolean {
   if (!lesson.success || typeof lesson.success === "string") {
     let requiredRun =
       typeof lesson.success === "string" ? lesson.success : `echo "Success!"`;
 
-    return runtimeModel.jobs.some((job) =>
-      job.steps.some(
-        (step) => step.stepType === StepType.Run && step.run === requiredRun
+    // Need to solve this for each trigger
+    return lesson.triggers.every((trigger) =>
+      r[trigger].jobs.some((job) =>
+        job.steps.some(
+          (step) => step.stepType === StepType.Run && step.run === requiredRun
+        )
       )
     );
   }
 
-  return lesson.success(runtimeModel);
+  return lesson.success(r);
 }

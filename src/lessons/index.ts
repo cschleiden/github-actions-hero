@@ -39,7 +39,7 @@ jobs:
     steps:
     - run: echo "Success!"`,
 
-    triggers: ["issues"],
+    triggers: ["push", "issues"],
 
     runtimeModel: {
       name: "Lesson 2",
