@@ -28,6 +28,22 @@ jobs:
     expect(wf.name).toBe("test");
     expect(wf.on).toEqual(["push", "pull_request"]);
   });
+
+  it("with if expression", () => {
+    const wf = parse(
+      `name: test
+on: [push]
+jobs:
+  first:
+    runs-on: ubuntu-latest
+    if: \${{ env.TEST }}
+    steps:
+    - run: echo 1`
+    );
+
+    expect(wf.name).toBe("test");
+    expect(wf.on).toEqual(["push"]);
+  });
 });
 
 describe("Parser errors", () => {

@@ -1,3 +1,17 @@
+export interface PushEvent {
+  event: "push";
+
+  branch?: string;
+}
+
+export interface IssuesEvent {
+  event: "issues";
+
+  action?: "created" | "updated" | "removed";
+}
+
+export type Event = PushEvent | IssuesEvent;
+
 export enum StepType {
   Uses,
   Docker,

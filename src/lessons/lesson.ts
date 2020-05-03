@@ -1,4 +1,4 @@
-import { RuntimeModel, StepType } from "../lib/runtimeModel";
+import { Event, RuntimeModel, StepType } from "../lib/runtimeModel";
 
 export interface Lesson {
   /**
@@ -20,7 +20,7 @@ export interface Lesson {
   /**
    * The events happening for this workflow
    */
-  triggers: string[];
+  events: Event[];
 
   /**
    * When is this lesson solved. By default it checks for `echo "Success!"`. If given a string, that string needs to be
@@ -43,8 +43,8 @@ export function lessonSolved(
       typeof lesson.success === "string" ? lesson.success : `echo "Success!"`;
 
     // Need to solve this for each trigger
-    return lesson.triggers.every((trigger) =>
-      r[trigger].jobs.some((job) =>
+    return lesson.events.every((trigger) =>
+      r[trigger.event].jobs.some((job) =>
         job.steps.some(
           (step) => step.stepType === StepType.Run && step.run === requiredRun
         )

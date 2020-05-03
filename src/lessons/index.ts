@@ -16,7 +16,11 @@ jobs:
     steps:
     - run: echo "Success!"`,
 
-    triggers: ["push"],
+    events: [
+      {
+        event: "push",
+      },
+    ],
 
     runtimeModel: {
       name: "Lesson 1",
@@ -39,7 +43,14 @@ jobs:
     steps:
     - run: echo "Success!"`,
 
-    triggers: ["push", "issues"],
+    events: [
+      {
+        event: "push",
+      },
+      {
+        event: "issues",
+      },
+    ],
 
     runtimeModel: {
       name: "Lesson 2",
@@ -63,7 +74,11 @@ jobs:
 
 `,
 
-    triggers: ["push"],
+    events: [
+      {
+        event: "push",
+      },
+    ],
 
     success: `./scriptDeploy.sh`,
 
@@ -108,7 +123,11 @@ jobs:
     @
 `,
 
-    triggers: ["push"],
+    events: [
+      {
+        event: "push",
+      },
+    ],
 
     runtimeModel: {
       name: "Lesson 4",

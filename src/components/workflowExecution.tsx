@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Event,
   RuntimeJob,
   RuntimeModel,
   RuntimeStep,
@@ -39,19 +40,19 @@ function groupJobs(jobs: RuntimeJob[]): RuntimeJob[][] {
 }
 
 export const WorkflowExecution: React.FC<{
-  triggers: string[];
+  events: Event[];
   executionModel: RuntimeModel;
-}> = ({ triggers, executionModel }) => {
+}> = ({ events, executionModel }) => {
   return (
     <div className="bg-gray-300 p-3">
-      <div className="triggers py-2 flex justify-center">
-        {triggers.map((t) => (
+      <div className="events py-2 flex justify-center">
+        {events.map((e) => (
           <div
-            key={t}
+            key={e.event}
             className="border border-gray-500 rounded bg-gray-500 shadow relative p-3 text-center font-bold  mr-12"
             style={{ width: "240px" }}
           >
-            {t}
+            {e.event}
 
             <div
               className="absolute rounded-b-full shadow bg-gray-500 border border-gray-500 border-t-0"

@@ -39,14 +39,14 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
 
   // Run
   try {
-    for (const trigger of l.triggers) {
+    for (const event of l.events) {
       const result = run(
-        [trigger],
+        [event],
         `.github/workflows/lesson-${lesson}.yaml`,
         parsedWorkflow
       );
 
-      workflowExecution[trigger] = result;
+      workflowExecution[event.event] = result;
     }
 
     outcome = lessonSolved(l, workflowExecution);
@@ -125,11 +125,11 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen p-12 flex flex-row"
         style={{ minWidth: "60vw" }}
       >
-        {l.triggers.map((trigger) => (
+        {l.events.map((event) => (
           <WorkflowExecution
-            key={trigger}
-            triggers={[trigger]}
-            executionModel={workflowExecution?.[trigger]}
+            key={event.event}
+            events={[event]}
+            executionModel={workflowExecution[event.event]}
           />
         ))}
       </div>

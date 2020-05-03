@@ -1,10 +1,10 @@
-import { RuntimeModel, RuntimeStep, StepType } from "./runtimeModel";
+import { Event, RuntimeModel, RuntimeStep, StepType } from "./runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "./workflow";
 
 export class RunError extends Error {}
 
 export function run(
-  events: string[],
+  events: Event[],
   workflowFilename: string,
   workflow: Workflow
 ): RuntimeModel {
@@ -14,7 +14,7 @@ export function run(
   };
 
   // Check if any event matches
-  if (!events.some((event) => match(event, workflow.on))) {
+  if (!events.some((event) => match(event.event, workflow.on))) {
     return result;
   }
 
