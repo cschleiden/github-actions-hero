@@ -1,4 +1,5 @@
 import * as chevrotain from "chevrotain";
+
 const True = chevrotain.createToken({ name: "True", pattern: /true/ });
 const False = chevrotain.createToken({ name: "False", pattern: /false/ });
 const Null = chevrotain.createToken({ name: "Null", pattern: /null/ });
@@ -19,24 +20,44 @@ const Operator = chevrotain.createToken({
   name: "Operator",
   pattern: chevrotain.Lexer.NA,
 });
-export const And = chevrotain.createToken({
+const And = chevrotain.createToken({
   name: "And",
   pattern: /&&/,
   categories: Operator,
 });
-export const Or = chevrotain.createToken({
+const Or = chevrotain.createToken({
   name: "Or",
   pattern: /\|\|/,
   categories: Operator,
 });
-export const Eq = chevrotain.createToken({
+const Eq = chevrotain.createToken({
   name: "Eq",
   pattern: /==/,
   categories: Operator,
 });
-export const NEq = chevrotain.createToken({
+const NEq = chevrotain.createToken({
   name: "NotEq",
   pattern: /!=/,
+  categories: Operator,
+});
+const LT = chevrotain.createToken({
+  name: "LT",
+  pattern: /</,
+  categories: Operator,
+});
+const LTE = chevrotain.createToken({
+  name: "LTE",
+  pattern: /<=/,
+  categories: Operator,
+});
+const GT = chevrotain.createToken({
+  name: "GT",
+  pattern: />/,
+  categories: Operator,
+});
+const GTE = chevrotain.createToken({
+  name: "GTE",
+  pattern: />=/,
   categories: Operator,
 });
 
@@ -71,6 +92,10 @@ const allTokens = [
   Or,
   Eq,
   NEq,
+  LTE,
+  LT,
+  GTE,
+  GT,
 
   True,
   False,
@@ -99,7 +124,19 @@ class ExpressionParser extends chevrotain.CstParser {
       { ALT: () => this.SUBRULE(this.logicalGrouping) },
       { ALT: () => this.SUBRULE(this.functionCall) },
       { ALT: () => this.SUBRULE(this.value) },
+      { ALT: () => this.SUBRULE(this.array) },
     ]);
+  });
+
+  array = this.RULE("array", () => {
+    this.CONSUME(LSquare);
+    this.MANY_SEP({
+      SEP: Comma,
+      DEF: () => {
+        this.SUBRULE(this.subExpression);
+      },
+    });
+    this.CONSUME(RSquare);
   });
 
   logicalGrouping = this.RULE("logicalGrouping", () => {
@@ -139,3 +176,6 @@ class ExpressionParser extends chevrotain.CstParser {
 export const parser = new ExpressionParser();
 
 export const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
+
+// Operators
+export { And, Or, Eq, NEq, LT, LTE, GT, GTE };

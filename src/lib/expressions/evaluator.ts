@@ -1,5 +1,5 @@
 import { tokenMatcher } from "chevrotain";
-import { And, BaseCstVisitor, Eq, NEq, Or } from "./parser";
+import { And, BaseCstVisitor, Eq, GT, GTE, LT, LTE, NEq, Or } from "./parser";
 
 class ExpressionEvaluator extends BaseCstVisitor {
   constructor() {
@@ -42,6 +42,26 @@ class ExpressionEvaluator extends BaseCstVisitor {
           case tokenMatcher(operator, Or):
             result = result || rhsResult;
             break;
+
+          // <
+          case tokenMatcher(operator, LT):
+            result = result < rhsResult;
+            break;
+
+          // <=
+          case tokenMatcher(operator, LTE):
+            result = result <= rhsResult;
+            break;
+
+          // >
+          case tokenMatcher(operator, GT):
+            result = result > rhsResult;
+            break;
+
+          // >=
+          case tokenMatcher(operator, GTE):
+            result = result >= rhsResult;
+            break;
         }
       });
     }
@@ -56,11 +76,24 @@ class ExpressionEvaluator extends BaseCstVisitor {
 
       case !!ctx.logicalGrouping:
         return this.visit(ctx.logicalGrouping);
+
+      case !!ctx.array:
+        return this.visit(ctx.array);
     }
   }
 
   logicalGrouping(ctx: any) {
     return this.visit(ctx.expression);
+  }
+
+  array(ctx: any) {
+    const result = [];
+
+    if (ctx.subExpression) {
+      result.push(...ctx.subExpression.map((se) => this.visit(se)));
+    }
+
+    return result;
   }
 
   value(ctx: any) {

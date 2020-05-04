@@ -22,16 +22,18 @@ describe("expression parser", () => {
     expect(ev("false")).toBe(false);
   });
 
+  it("array", () => {
+    expect(ev("[]")).toStrictEqual([]);
+    expect(ev("[1,2,3]")).toStrictEqual([1, 2, 3]);
+    expect(ev("['a', 'b']")).toStrictEqual(["a", "b"]);
+    expect(ev("['a', 1]")).toStrictEqual(["a", 1]);
+  });
+
   describe("operators", () => {
     /*
-    ( )	Logical grouping
     [ ]	Index
     .	Property dereference
     !	Not
-    <	Less than
-    <=	Less than or equal
-    >	Greater than
-    >=	Greater than or equal
     */
 
     it("==", () => {
@@ -52,6 +54,9 @@ describe("expression parser", () => {
       // Mixed
       expect(ev("null == 0")).toBe(true);
       expect(ev("0 == null")).toBe(true);
+
+      // Array
+      expect(ev("[1,2] == [1.2]")).toBe(false);
     });
 
     it("!=", () => {
@@ -72,6 +77,9 @@ describe("expression parser", () => {
       // Mixed
       expect(ev("null != 0")).toBe(false);
       expect(ev("0 != null")).toBe(false);
+
+      // Array
+      expect(ev("[1,2] != [1.2]")).toBe(true);
     });
 
     it("&&", () => {
@@ -86,6 +94,30 @@ describe("expression parser", () => {
       expect(ev("false || true")).toBe(true);
       expect(ev("true || true")).toBe(true);
       expect(ev("false || false")).toBe(false);
+    });
+
+    it("<", () => {
+      expect(ev("1 < 2")).toBe(true);
+      expect(ev("1 < 1")).toBe(false);
+      expect(ev("2 < 1")).toBe(false);
+    });
+
+    it("<=", () => {
+      expect(ev("1 <= 2")).toBe(true);
+      expect(ev("1 <= 1")).toBe(true);
+      expect(ev("2 <= 1")).toBe(false);
+    });
+
+    it(">", () => {
+      expect(ev("1 > 2")).toBe(false);
+      expect(ev("1 > 1")).toBe(false);
+      expect(ev("2 > 1")).toBe(true);
+    });
+
+    it(">=", () => {
+      expect(ev("1 >= 2")).toBe(false);
+      expect(ev("1 >= 1")).toBe(true);
+      expect(ev("2 >= 1")).toBe(true);
     });
   });
 
