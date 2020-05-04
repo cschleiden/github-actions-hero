@@ -128,4 +128,19 @@ describe("expression parser", () => {
     expect(ev("(true || false) && true")).toBe(true);
     expect(ev("true || (false && true)")).toBe(true);
   });
+
+  describe("functions", () => {
+    describe("contains", () => {
+      it("array", () => {
+        expect(ev("contains([2, 1], 1)")).toBe(true);
+      });
+
+      it("string", () => {
+        expect(ev("contains('hay', 'h')")).toBe(true);
+        expect(ev("contains('tay', 'h')")).toBe(false);
+      });
+    });
+  });
+
+  // describe("context", () => {});
 });

@@ -1,5 +1,17 @@
 import { tokenMatcher } from "chevrotain";
-import { And, BaseCstVisitor, Eq, GT, GTE, LT, LTE, NEq, Or } from "./parser";
+import * as Functions from "./functions";
+import {
+  And,
+  BaseCstVisitor,
+  contains,
+  Eq,
+  GT,
+  GTE,
+  LT,
+  LTE,
+  NEq,
+  Or,
+} from "./parser";
 
 class ExpressionEvaluator extends BaseCstVisitor {
   constructor() {
@@ -79,6 +91,9 @@ class ExpressionEvaluator extends BaseCstVisitor {
 
       case !!ctx.array:
         return this.visit(ctx.array);
+
+      case !!ctx.functionCall:
+        return this.visit(ctx.functionCall);
     }
   }
 
@@ -94,6 +109,22 @@ class ExpressionEvaluator extends BaseCstVisitor {
     }
 
     return result;
+  }
+
+  functionCall(ctx: any) {
+    const parameters = ctx.expression.map((p) => this.visit(p));
+
+    const f = ctx.Function[0];
+    switch (true) {
+      case !!tokenMatcher(f, contains):
+        return Functions.contains(parameters[0], parameters[1]);
+    }
+  }
+
+  parameters(ctx: any) {
+    console.log(JSON.stringify(ctx, undefined, 2));
+    // return ctx.parameters.map((p) => this.visit(p));
+    return [];
   }
 
   value(ctx: any) {

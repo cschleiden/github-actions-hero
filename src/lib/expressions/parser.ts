@@ -3,10 +3,6 @@ import * as chevrotain from "chevrotain";
 const True = chevrotain.createToken({ name: "True", pattern: /true/ });
 const False = chevrotain.createToken({ name: "False", pattern: /false/ });
 const Null = chevrotain.createToken({ name: "Null", pattern: /null/ });
-const Function = chevrotain.createToken({
-  name: "Function",
-  pattern: /toJson|hashFiles/,
-});
 const LParens = chevrotain.createToken({ name: "LParens", pattern: /\(/ });
 const RParens = chevrotain.createToken({ name: "RParens", pattern: /\)/ });
 const LSquare = chevrotain.createToken({ name: "LSquare", pattern: /\[/ });
@@ -61,6 +57,19 @@ const GTE = chevrotain.createToken({
   categories: Operator,
 });
 
+//
+// Functions
+//
+const Function = chevrotain.createToken({
+  name: "Function",
+  pattern: chevrotain.Lexer.NA,
+});
+const contains = chevrotain.createToken({
+  name: "contains",
+  pattern: /contains/,
+  categories: Function,
+});
+
 const StringLiteral = chevrotain.createToken({
   name: "StringLiteral",
   //pattern: /'(:?[^'']|\\(:?[bfnrtv\\/]|u[0-9a-fA-F]{4}))*'/,
@@ -79,7 +88,10 @@ const WhiteSpace = chevrotain.createToken({
 const allTokens = [
   WhiteSpace,
   NumberLiteral,
+
   Function,
+  contains,
+
   StringLiteral,
   LParens,
   RParens,
@@ -148,18 +160,19 @@ class ExpressionParser extends chevrotain.CstParser {
   functionCall = this.RULE("functionCall", () => {
     this.CONSUME(Function);
     this.CONSUME(LParens);
-    this.SUBRULE(this.parameters);
-    this.CONSUME(RParens);
-  });
-
-  parameters = this.RULE("parameters", () => {
+    //this.SUBRULE(this.parameters);
     this.MANY_SEP({
       SEP: Comma,
       DEF: () => {
         this.SUBRULE(this.expression);
       },
     });
+    this.CONSUME(RParens);
   });
+
+  // parameters = this.RULE("parameters", () => {
+
+  // });
 
   value = this.RULE("value", () => {
     this.OR([
@@ -179,3 +192,5 @@ export const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
 
 // Operators
 export { And, Or, Eq, NEq, LT, LTE, GT, GTE };
+// Functions
+export { contains };
