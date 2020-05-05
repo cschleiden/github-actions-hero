@@ -1,6 +1,16 @@
 import { evaluateExpression } from ".";
 
-const ev = <T>(input: string): T => evaluateExpression(input).result;
+const ev = <T>(input: string): T =>
+  evaluateExpression(input, {
+    contexts: {
+      github: {
+        event: {
+          ref: "refs/tags/simple-tag",
+        },
+        event_path: "push.json",
+      },
+    },
+  }).result;
 
 describe("expression parser", () => {
   it("numbers", () => {
@@ -31,10 +41,14 @@ describe("expression parser", () => {
 
   describe("operators", () => {
     /*
-    [ ]	Index
-    .	Property dereference
     !	Not
     */
+
+    it("!", () => {
+      // Booleans
+      expect(ev("!true")).toBe(false);
+      expect(ev("!false")).toBe(true);
+    });
 
     it("==", () => {
       // Numbers
@@ -121,7 +135,7 @@ describe("expression parser", () => {
     });
   });
 
-  it("grouping", () => {
+  it("logical grouping", () => {
     expect(ev("(true && false) && true")).toBe(false);
     expect(ev("true && (false && true)")).toBe(false);
 
@@ -140,7 +154,33 @@ describe("expression parser", () => {
         expect(ev("contains('tay', 'h')")).toBe(false);
       });
     });
+
+    it("startsWith", () => {
+      expect(ev("startsWith('Hello world', 'He')")).toBe(true);
+      expect(ev("startsWith('Hello world', 'Het')")).toBe(false);
+    });
+
+    it("endsWith", () => {
+      expect(ev("endsWith('Hello world', 'world')")).toBe(true);
+      expect(ev("endsWith('Hello world', 'Het')")).toBe(false);
+    });
+
+    it("join", () => {
+      expect(ev("join([1,2,3])")).toBe("1,2,3");
+      expect(ev("join([1,2,3], '')")).toBe("123");
+      expect(ev("join([1,'2'], '')")).toBe("12");
+    });
   });
 
-  // describe("context", () => {});
+  describe("context", () => {
+    it("simple access", () => {
+      expect(ev("github.event_path")).toBe("push.json");
+      expect(ev("github['event_path']")).toBe("push.json");
+    });
+    it("nested access", () => {
+      expect(ev("github.event['ref']")).toBe("refs/tags/simple-tag");
+      expect(ev("github.event.ref")).toBe("refs/tags/simple-tag");
+      expect(ev("github['event']['ref']")).toBe("refs/tags/simple-tag");
+    });
+  });
 });

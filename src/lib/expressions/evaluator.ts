@@ -4,28 +4,29 @@ import {
   And,
   BaseCstVisitor,
   contains,
+  endsWith,
   Eq,
   GT,
   GTE,
+  join,
   LT,
   LTE,
   NEq,
   Or,
+  startsWith,
 } from "./parser";
 
+export interface IExpressionContext {
+  contexts: { [contextName: string]: { [id: string]: {} } };
+}
+
 class ExpressionEvaluator extends BaseCstVisitor {
-  constructor() {
-    super();
-
-    // this.validateVisitor();
-  }
-
-  expression(ctx: any) {
-    let result = this.visit(ctx.lhs);
+  expression(ctx: any, context: IExpressionContext) {
+    let result = this.visit(ctx.lhs, context);
 
     if (ctx.rhs) {
       ctx.rhs.forEach((rhsOperand, idx) => {
-        let rhsResult = this.visit(rhsOperand);
+        let rhsResult = this.visit(rhsOperand, context);
         const operator = ctx.Operator[idx];
 
         // Coerce types
@@ -81,20 +82,54 @@ class ExpressionEvaluator extends BaseCstVisitor {
     return result;
   }
 
-  subExpression(ctx: any) {
+  subExpression(ctx: any, context: IExpressionContext) {
     switch (true) {
       case !!ctx.value:
-        return this.visit(ctx.value);
+        return this.visit(ctx.value, context);
 
       case !!ctx.logicalGrouping:
-        return this.visit(ctx.logicalGrouping);
+        return this.visit(ctx.logicalGrouping, context);
 
       case !!ctx.array:
-        return this.visit(ctx.array);
+        return this.visit(ctx.array, context);
 
       case !!ctx.functionCall:
-        return this.visit(ctx.functionCall);
+        return this.visit(ctx.functionCall, context);
+
+      case !!ctx.contextAccess:
+        return this.visit(ctx.contextAccess, context);
     }
+  }
+
+  contextAccess(ctx: any, context: IExpressionContext) {
+    const contextObject = context.contexts[ctx.Context[0].image];
+
+    const result = (ctx.contextMember as any[]).reduce(
+      (previousResult, contextMember) =>
+        this.visit(contextMember, previousResult),
+      contextObject
+    );
+    return result;
+  }
+
+  contextMember(ctx: any, contextObject: any) {
+    switch (true) {
+      case !!ctx.contextDotMember:
+        return this.visit(ctx.contextDotMember, contextObject);
+
+      case !!ctx.contextBoxMember:
+        return this.visit(ctx.contextBoxMember, contextObject);
+    }
+  }
+
+  contextDotMember(ctx: any, contextObject: any) {
+    const path = ctx.ContextMember[0].image;
+    return contextObject[path];
+  }
+
+  contextBoxMember(ctx: any, contextObject: any) {
+    const path = this._removeQuotes(ctx.StringLiteral[0].image);
+    return contextObject[path];
   }
 
   logicalGrouping(ctx: any) {
@@ -118,13 +153,16 @@ class ExpressionEvaluator extends BaseCstVisitor {
     switch (true) {
       case !!tokenMatcher(f, contains):
         return Functions.contains(parameters[0], parameters[1]);
-    }
-  }
 
-  parameters(ctx: any) {
-    console.log(JSON.stringify(ctx, undefined, 2));
-    // return ctx.parameters.map((p) => this.visit(p));
-    return [];
+      case !!tokenMatcher(f, startsWith):
+        return Functions.startsWith(parameters[0], parameters[1]);
+
+      case !!tokenMatcher(f, endsWith):
+        return Functions.endsWith(parameters[0], parameters[1]);
+
+      case !!tokenMatcher(f, join):
+        return Functions.join(parameters[0], parameters[1]);
+    }
   }
 
   value(ctx: any) {
@@ -132,27 +170,47 @@ class ExpressionEvaluator extends BaseCstVisitor {
       case !!ctx.NumberLiteral:
         return parseFloat(ctx.NumberLiteral[0].image);
 
-      case !!ctx.True:
-        return true;
-
-      case !!ctx.False:
-        return false;
+      case !!ctx.booleanValue:
+        return this.visit(ctx.booleanValue);
 
       case !!ctx.Null:
         return null;
 
       case !!ctx.StringLiteral: {
         const value: string = ctx.StringLiteral[0].image;
-        // Remove leading and trailing '
-        return "" + value.substring(1, value.length - 1).replace(/''/g, "'");
+        return this._removeQuotes(value);
       }
     }
+  }
+
+  booleanValue(ctx: any) {
+    let result: boolean;
+
+    switch (true) {
+      case !!ctx.True:
+        result = true;
+        break;
+
+      case !!ctx.False:
+        result = false;
+        break;
+    }
+
+    if (!!ctx.Not) {
+      result = !result;
+    }
+
+    return result;
   }
 
   private _coerceValue(val: any): any {
     if (val === null) {
       return val;
     }
+  }
+
+  private _removeQuotes(value: string): string {
+    return "" + value.substring(1, value.length - 1).replace(/''/g, "'");
   }
 }
 

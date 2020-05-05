@@ -1,5 +1,8 @@
 import * as chevrotain from "chevrotain";
 
+///////
+// Copy the content between here,
+
 const True = chevrotain.createToken({ name: "True", pattern: /true/ });
 const False = chevrotain.createToken({ name: "False", pattern: /false/ });
 const Null = chevrotain.createToken({ name: "Null", pattern: /null/ });
@@ -8,6 +11,16 @@ const RParens = chevrotain.createToken({ name: "RParens", pattern: /\)/ });
 const LSquare = chevrotain.createToken({ name: "LSquare", pattern: /\[/ });
 const RSquare = chevrotain.createToken({ name: "RSquare", pattern: /]/ });
 const Comma = chevrotain.createToken({ name: "Comma", pattern: /,/ });
+
+const Context = chevrotain.createToken({
+  name: "Context",
+  pattern: /github|needs|job/,
+});
+const Dot = chevrotain.createToken({ name: "Dot", pattern: /\./ });
+const ContextMember = chevrotain.createToken({
+  name: "ContextMember",
+  pattern: /[a-zA-Z_][a-zA-Z0-9-_]*/,
+});
 
 //
 // Operators
@@ -56,10 +69,16 @@ const GTE = chevrotain.createToken({
   pattern: />=/,
   categories: Operator,
 });
+const Not = chevrotain.createToken({
+  name: "Not",
+  pattern: /!/,
+  categories: Operator,
+});
 
 //
 // Functions
 //
+// TODO: Adding all functions as tokens might not be the best idea, but this way we get validation during parsing
 const Function = chevrotain.createToken({
   name: "Function",
   pattern: chevrotain.Lexer.NA,
@@ -67,6 +86,21 @@ const Function = chevrotain.createToken({
 const contains = chevrotain.createToken({
   name: "contains",
   pattern: /contains/,
+  categories: Function,
+});
+const startsWith = chevrotain.createToken({
+  name: "startsWith",
+  pattern: /startsWith/,
+  categories: Function,
+});
+const endsWith = chevrotain.createToken({
+  name: "endsWith",
+  pattern: /endsWith/,
+  categories: Function,
+});
+const join = chevrotain.createToken({
+  name: "join",
+  pattern: /join/,
   categories: Function,
 });
 
@@ -91,6 +125,17 @@ const allTokens = [
 
   Function,
   contains,
+  startsWith,
+  // format
+  endsWith,
+  join,
+  // toJson,
+  // fromJson,
+  // hashFiles,
+  // success
+  // always
+  // cancelled
+  // failure
 
   StringLiteral,
   LParens,
@@ -108,12 +153,17 @@ const allTokens = [
   LT,
   GTE,
   GT,
+  Not,
 
   True,
   False,
   Null,
+
+  Context,
+  Dot,
+  ContextMember,
 ];
-export const ExpressionLexer = new chevrotain.Lexer(allTokens);
+const ExpressionLexer = new chevrotain.Lexer(allTokens);
 
 class ExpressionParser extends chevrotain.CstParser {
   constructor() {
@@ -135,9 +185,35 @@ class ExpressionParser extends chevrotain.CstParser {
     this.OR([
       { ALT: () => this.SUBRULE(this.logicalGrouping) },
       { ALT: () => this.SUBRULE(this.functionCall) },
+      { ALT: () => this.SUBRULE(this.contextAccess) },
       { ALT: () => this.SUBRULE(this.value) },
       { ALT: () => this.SUBRULE(this.array) },
     ]);
+  });
+
+  contextAccess = this.RULE("contextAccess", () => {
+    this.CONSUME(Context);
+    this.MANY(() => {
+      this.SUBRULE(this.contextMember);
+    });
+  });
+
+  contextMember = this.RULE("contextMember", () => {
+    this.OR([
+      { ALT: () => this.SUBRULE(this.contextDotMember) },
+      { ALT: () => this.SUBRULE(this.contextBoxMember) },
+    ]);
+  });
+
+  contextDotMember = this.RULE("contextDotMember", () => {
+    this.CONSUME(Dot);
+    this.CONSUME(ContextMember);
+  });
+
+  contextBoxMember = this.RULE("contextBoxMember", () => {
+    this.CONSUME(LSquare);
+    this.CONSUME(StringLiteral);
+    this.CONSUME(RSquare);
   });
 
   array = this.RULE("array", () => {
@@ -159,8 +235,9 @@ class ExpressionParser extends chevrotain.CstParser {
 
   functionCall = this.RULE("functionCall", () => {
     this.CONSUME(Function);
+
+    // Parse parameters
     this.CONSUME(LParens);
-    //this.SUBRULE(this.parameters);
     this.MANY_SEP({
       SEP: Comma,
       DEF: () => {
@@ -170,27 +247,37 @@ class ExpressionParser extends chevrotain.CstParser {
     this.CONSUME(RParens);
   });
 
-  // parameters = this.RULE("parameters", () => {
-
-  // });
-
   value = this.RULE("value", () => {
     this.OR([
       { ALT: () => this.CONSUME(StringLiteral) },
       { ALT: () => this.CONSUME(NumberLiteral) },
+      { ALT: () => this.SUBRULE(this.booleanValue) },
+      { ALT: () => this.CONSUME(Null) },
+    ]);
+  });
+
+  booleanValue = this.RULE("booleanValue", () => {
+    this.OPTION(() => this.CONSUME(Not));
+    this.OR([
       { ALT: () => this.CONSUME(True) },
       { ALT: () => this.CONSUME(False) },
-      { ALT: () => this.CONSUME(Null) },
     ]);
   });
 }
 
+// return {
+//   lexer: ExpressionLexer,
+//   parser: ExpressionParser,
+//   defaultRule: "expression",
+// };
+// and here to the playground for visualization.
+//////////
+
 // reuse the same parser instance.
 export const parser = new ExpressionParser();
-
 export const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
-
+export { ExpressionLexer };
 // Operators
 export { And, Or, Eq, NEq, LT, LTE, GT, GTE };
 // Functions
-export { contains };
+export { contains, startsWith, endsWith, join };

@@ -12,3 +12,15 @@ export function contains<S extends T[] | string, T>(
     );
   }
 }
+
+export function startsWith(haystack: string, needle: string): boolean {
+  return haystack.startsWith(needle);
+}
+
+export function endsWith(haystack: string, needle: string): boolean {
+  return haystack.endsWith(needle);
+}
+
+export function join<T>(arr: T[], separator?: string): string {
+  return arr.join(separator);
+}
