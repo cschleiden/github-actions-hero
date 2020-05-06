@@ -60,10 +60,20 @@ function getRanges(token: string, workflow: string): Range[] {
 export const Editor: React.FC<{
   workflow: string;
   change: (value: string) => void;
-}> = ({ workflow, change }) => {
+  everythingEditable?: boolean;
+}> = ({ workflow, change, everythingEditable }) => {
   const editors = React.useRef<CodeMirror.Editor[]>([]);
 
-  const ranges = getRanges("@", workflow);
+  const ranges = everythingEditable
+    ? [
+        {
+          start: 0,
+          end: 0,
+          editable: true,
+          text: workflow,
+        },
+      ]
+    : getRanges("@", workflow);
 
   return (
     <div className={style.editorWrapper}>
