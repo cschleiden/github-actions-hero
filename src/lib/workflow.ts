@@ -59,8 +59,10 @@ export interface Job {
 
   "continue-on-error"?: boolean;
 
+  // TODO
   container?: any;
 
+  // TODO
   services?: any;
 }
 
@@ -83,6 +85,7 @@ export interface Workflow {
 
   env?: EnvMap;
 
+  // TODO
   defaults?: any;
 
   jobs: JobMap;
