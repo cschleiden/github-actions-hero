@@ -19,3 +19,18 @@ export function evaluateExpression(
     parseErrors: parser.errors,
   };
 }
+
+const expr = /\$\{\{(.*?)\}\}/gm;
+
+export function replaceExpressions(
+  input: string,
+  context: IExpressionContext
+): string {
+  return input.replace(expr, (g) => {
+    const result = evaluateExpression(g, context);
+
+    // TODO: Error handling
+
+    return result.result;
+  });
+}

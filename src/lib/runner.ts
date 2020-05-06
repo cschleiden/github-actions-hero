@@ -1,3 +1,6 @@
+import GitHubPushContext from "../data/push-payload.json";
+import { replaceExpressions } from "./expressions";
+import { IExpressionContext } from "./expressions/evaluator";
 import {
   Event,
   RuntimeEnv,
@@ -14,8 +17,22 @@ export function run(
   workflowFilename: string,
   workflow: Workflow
 ): RuntimeModel {
+  const ctx: IExpressionContext = {
+    contexts: {
+      github: GitHubPushContext,
+    },
+  };
+
+  const ev = (input?: string): string | undefined => {
+    if (!input) {
+      return input;
+    }
+
+    return replaceExpressions(input, ctx);
+  };
+
   const result: RuntimeModel = {
-    name: workflow.name || workflowFilename,
+    name: ev(workflow.name) || workflowFilename,
     jobs: [],
   };
 
@@ -24,12 +41,14 @@ export function run(
     return result;
   }
 
+  // Run jobs in dependency order
   const orderedJobs = _sortJobs(workflow.jobs);
   for (const { jobId, level } of orderedJobs) {
     const jobDef = workflow.jobs[jobId];
 
     result.jobs.push({
-      name: jobDef.name || jobId,
+      id: jobId,
+      name: ev(jobDef.name) || jobId,
       steps: _executeSteps(jobDef.steps),
       state: "finished",
       conclusion: "success",

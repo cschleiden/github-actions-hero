@@ -49,6 +49,26 @@ describe("Runner", () => {
     expect(r.jobs[0].name).toBe("first");
   });
 
+  it("with expression name", () => {
+    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+      on: "push",
+      jobs: {
+        first: {
+          name: "${{ github.event_name }}",
+          "runs-on": "ubuntu-latest",
+          steps: [
+            {
+              run: "echo 'Success'",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].name).toBe("push");
+  });
+
   it("runs multiple jobs in random order", () => {
     const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
       on: "push",

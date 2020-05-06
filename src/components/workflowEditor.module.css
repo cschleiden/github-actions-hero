@@ -3,5 +3,5 @@
 }
 
 .editor :global(.CodeMirror-line) {
-    background: #444 !important;
+    background: #333 !important;
 }

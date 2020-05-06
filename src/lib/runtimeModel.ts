@@ -37,6 +37,7 @@ export interface RuntimeDockerStep {
 export type RuntimeStep = RuntimeRunStep | RuntimeUsesStep | RuntimeDockerStep;
 
 export interface RuntimeJob {
+  id: string;
   name: string;
 
   steps: RuntimeStep[];

@@ -37,6 +37,7 @@ jobs:
     steps:
     - run: echo "Job 4"
   lesson4-5:
+    name: \${{ github.event_name }}-\${{ github.event.ref }}
     runs-on: ubuntu-latest
     needs: [lesson4-3]
     steps:

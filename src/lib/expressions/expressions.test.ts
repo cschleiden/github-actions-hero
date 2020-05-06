@@ -1,16 +1,16 @@
-import { evaluateExpression } from ".";
+import { evaluateExpression, replaceExpressions } from ".";
 
-const ev = <T>(input: string): T =>
-  evaluateExpression(input, {
-    contexts: {
-      github: {
-        event: {
-          ref: "refs/tags/simple-tag",
-        },
-        event_path: "push.json",
+const ctx = {
+  contexts: {
+    github: {
+      event: {
+        ref: "refs/tags/simple-tag",
       },
+      event_path: "push.json",
     },
-  }).result;
+  },
+};
+const ev = <T>(input: string): T => evaluateExpression(input, ctx).result;
 
 describe("expression parser", () => {
   it("numbers", () => {
@@ -182,5 +182,15 @@ describe("expression parser", () => {
       expect(ev("github.event.ref")).toBe("refs/tags/simple-tag");
       expect(ev("github['event']['ref']")).toBe("refs/tags/simple-tag");
     });
+  });
+});
+
+describe("expression replacer", () => {
+  it("", () => {
+    expect(replaceExpressions("abc", ctx)).toBe("abc");
+    expect(replaceExpressions("abc ${{ 'test' }}", ctx)).toBe("abc test");
+    expect(replaceExpressions("${{ 123 }} abc ${{ 'test' }}", ctx)).toBe(
+      "123 abc test"
+    );
   });
 });
