@@ -3,12 +3,14 @@ import { evaluateExpression, replaceExpressions } from ".";
 const ctx = {
   contexts: {
     github: {
+      ref: "refs/heads/master",
+      event_name: "push",
       event: {
-        ref: "refs/tags/simple-tag",
+        ref: "refs/heads/master",
       },
-      secrets: {
-        FOO: "Bar",
-      },
+    },
+    secrets: {
+      FOO: "Bar",
     },
   },
 };
@@ -175,7 +177,7 @@ describe("expression parser", () => {
 
     it("toJson", () => {
       expect(ev("toJson([1,2,3])")).toBe("[1,2,3]");
-      expect(ev("toJson(github.event_path)")).toBe('"push.json"');
+      expect(ev("toJson(github.event_name)")).toBe('"push"');
       expect(ev("toJson(secrets)")).toBe('{"FOO":"Bar"}');
 
       expect(ev("toJson(true)")).toBe("true");
@@ -185,13 +187,13 @@ describe("expression parser", () => {
 
   describe("context", () => {
     it("simple access", () => {
-      expect(ev("github.event_path")).toBe("push.json");
-      expect(ev("github['event_path']")).toBe("push.json");
+      expect(ev("github.event_name")).toBe("push");
+      expect(ev("github['event_name']")).toBe("push");
     });
     it("nested access", () => {
-      expect(ev("github.event['ref']")).toBe("refs/tags/simple-tag");
-      expect(ev("github.event.ref")).toBe("refs/tags/simple-tag");
-      expect(ev("github['event']['ref']")).toBe("refs/tags/simple-tag");
+      expect(ev("github.event['ref']")).toBe("refs/heads/master");
+      expect(ev("github.event.ref")).toBe("refs/heads/master");
+      expect(ev("github['event']['ref']")).toBe("refs/heads/master");
     });
   });
 });
