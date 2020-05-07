@@ -14,7 +14,7 @@ const Comma = chevrotain.createToken({ name: "Comma", pattern: /,/ });
 
 const Context = chevrotain.createToken({
   name: "Context",
-  pattern: /github|needs|job/,
+  pattern: /github|needs|job|secrets/,
 });
 const Dot = chevrotain.createToken({ name: "Dot", pattern: /\./ });
 const ContextMember = chevrotain.createToken({
@@ -103,6 +103,11 @@ const join = chevrotain.createToken({
   pattern: /join/,
   categories: Function,
 });
+const toJson = chevrotain.createToken({
+  name: "toJson",
+  pattern: /toJson/,
+  categories: Function,
+});
 
 const StringLiteral = chevrotain.createToken({
   name: "StringLiteral",
@@ -129,7 +134,7 @@ const allTokens = [
   // format
   endsWith,
   join,
-  // toJson,
+  toJson,
   // fromJson,
   // hashFiles,
   // success
@@ -280,4 +285,4 @@ export { ExpressionLexer };
 // Operators
 export { And, Or, Eq, NEq, LT, LTE, GT, GTE };
 // Functions
-export { contains, startsWith, endsWith, join };
+export { contains, startsWith, endsWith, join, toJson };

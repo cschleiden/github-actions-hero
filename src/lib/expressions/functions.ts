@@ -24,3 +24,7 @@ export function endsWith(haystack: string, needle: string): boolean {
 export function join<T>(arr: T[], separator?: string): string {
   return arr.join(separator);
 }
+
+export function toJson(input: unknown): string {
+  return JSON.stringify(input);
+}

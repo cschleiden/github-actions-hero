@@ -14,12 +14,16 @@ import {
   NEq,
   Or,
   startsWith,
+  toJson,
 } from "./parser";
 
 export interface IExpressionContext {
   contexts: { [contextName: string]: { [id: string]: {} } };
 }
 
+/**
+ * This evaluates an expression by operation on the CST produced by the parser.
+ */
 class ExpressionEvaluator extends BaseCstVisitor {
   expression(ctx: any, context: IExpressionContext) {
     let result = this.visit(ctx.lhs, context);
@@ -104,11 +108,16 @@ class ExpressionEvaluator extends BaseCstVisitor {
   contextAccess(ctx: any, context: IExpressionContext) {
     const contextObject = context.contexts[ctx.Context[0].image];
 
-    const result = (ctx.contextMember as any[]).reduce(
-      (previousResult, contextMember) =>
-        this.visit(contextMember, previousResult),
-      contextObject
-    );
+    let result = contextObject;
+
+    if (!!ctx.contextMember) {
+      result = (ctx.contextMember as any[]).reduce(
+        (previousResult, contextMember) =>
+          this.visit(contextMember, previousResult),
+        contextObject
+      );
+    }
+
     return result;
   }
 
@@ -146,8 +155,8 @@ class ExpressionEvaluator extends BaseCstVisitor {
     return result;
   }
 
-  functionCall(ctx: any) {
-    const parameters = ctx.expression.map((p) => this.visit(p));
+  functionCall(ctx: any, context: IExpressionContext) {
+    const parameters = ctx.expression.map((p) => this.visit(p, context));
 
     const f = ctx.Function[0];
     switch (true) {
@@ -162,6 +171,9 @@ class ExpressionEvaluator extends BaseCstVisitor {
 
       case !!tokenMatcher(f, join):
         return Functions.join(parameters[0], parameters[1]);
+
+      case !!tokenMatcher(f, toJson):
+        return Functions.toJson(parameters[0]);
     }
   }
 

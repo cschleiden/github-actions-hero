@@ -6,7 +6,9 @@ const ctx = {
       event: {
         ref: "refs/tags/simple-tag",
       },
-      event_path: "push.json",
+      secrets: {
+        FOO: "Bar",
+      },
     },
   },
 };
@@ -169,6 +171,15 @@ describe("expression parser", () => {
       expect(ev("join([1,2,3])")).toBe("1,2,3");
       expect(ev("join([1,2,3], '')")).toBe("123");
       expect(ev("join([1,'2'], '')")).toBe("12");
+    });
+
+    it("toJson", () => {
+      expect(ev("toJson([1,2,3])")).toBe("[1,2,3]");
+      expect(ev("toJson(github.event_path)")).toBe('"push.json"');
+      expect(ev("toJson(secrets)")).toBe('{"FOO":"Bar"}');
+
+      expect(ev("toJson(true)")).toBe("true");
+      expect(ev("toJson(false)")).toBe("false");
     });
   });
 
