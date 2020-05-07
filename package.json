@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@primer/components": "^18.1.0",
+    "@primer/octicons-react": "^9.6.0",
     "ajv": "^6.12.2",
     "chevrotain": "^7.0.1",
     "codemirror": "^5.53.2",

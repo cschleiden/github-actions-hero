@@ -38,6 +38,7 @@ jobs:
     - run: echo "Job 4"
   lesson4-5:
     name: \${{ github.event_name }}-\${{ github.event.ref }}
+    if: github.event_name == 'test'
     runs-on: ubuntu-latest
     needs: [lesson4-3]
     steps:

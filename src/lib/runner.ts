@@ -1,5 +1,5 @@
 import GitHubPushContext from "../data/push-payload.json";
-import { replaceExpressions } from "./expressions";
+import { evaluateExpression, replaceExpressions } from "./expressions";
 import { IExpressionContext } from "./expressions/evaluator";
 import {
   Conclusion,
@@ -33,6 +33,14 @@ export function run(
     return replaceExpressions(input, ctx);
   };
 
+  const evIf = (input?: string): string | undefined => {
+    if (!input) {
+      return input;
+    }
+
+    return evaluateExpression(input, ctx).result;
+  };
+
   const result: RuntimeModel = {
     name: ev(workflow.name) || workflowFilename,
     jobs: [],
@@ -48,12 +56,21 @@ export function run(
   for (const { jobId, level } of orderedJobs) {
     const jobDef = workflow.jobs[jobId];
 
+    let conclusion = Conclusion.Success;
+
+    // Should we run this job?
+    if (!!jobDef.if) {
+      if (!evIf(jobDef.if)) {
+        conclusion = Conclusion.Skipped;
+      }
+    }
+
     result.jobs.push({
       id: jobId,
       name: ev(jobDef.name) || jobId,
       steps: _executeSteps(jobDef.steps),
       state: State.Done,
-      conclusion: Conclusion.Success,
+      conclusion,
       level,
       dependsOn: Array.isArray(jobDef.needs) ? jobDef.needs : [jobDef.needs],
     });

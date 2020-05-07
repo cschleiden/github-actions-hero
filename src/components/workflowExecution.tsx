@@ -1,6 +1,9 @@
+import { StyledOcticon } from "@primer/components";
+import { Check, Icon, Skip } from "@primer/octicons-react";
 import dynamic from "next/dynamic";
 import * as React from "react";
 import {
+  Conclusion,
   Event,
   RuntimeJob,
   RuntimeModel,
@@ -24,6 +27,89 @@ function makeSafeForCSS(name: string): string {
     return "__" + ("000" + c.toString(16)).slice(-4);
   });
 }
+
+function conclusionToIcon(conclusion: Conclusion): Icon {
+  switch (conclusion) {
+    case Conclusion.Skipped:
+      return Skip;
+
+    default:
+      return Check;
+  }
+}
+
+export const Job: React.FC<{
+  workflowVisId: number;
+  job: RuntimeJob;
+}> = ({ workflowVisId, job }) => {
+  return (
+    <div
+      key={job.id}
+      className={`border border-gray-500 rounded bg-white shadow relative mr-12 ${
+        job.conclusion == Conclusion.Skipped ? "opacity-50" : ""
+      }`}
+      style={{ width: "240px" }}
+    >
+      <div
+        className="absolute bg-gray-200 rounded-t-full border border-b-0 border-gray-500"
+        style={{
+          width: "20px",
+          height: "10px",
+          top: "-10px",
+          left: "20px",
+        }}
+      >
+        <div
+          className={`absolute bg-gray-600 rounded-full ci-${workflowVisId}-${makeSafeForCSS(
+            job.id
+          )}`}
+          style={{
+            top: "4px",
+            left: "4px",
+            width: "10px",
+            height: "10px",
+          }}
+        ></div>
+      </div>
+      <div
+        className="absolute rounded-b-full shadow bg-white border border-t-0"
+        style={{
+          width: "20px",
+          height: "10px",
+          bottom: "-9.5px",
+          right: "20px",
+        }}
+      >
+        <div
+          className={`absolute bg-blue-400 rounded-full co-${workflowVisId}-${makeSafeForCSS(
+            job.id
+          )}`}
+          style={{
+            bottom: "4px",
+            left: "4px",
+            width: "10px",
+            height: "10px",
+          }}
+        ></div>
+      </div>
+      <div className="flex flex-row bg-gray-200 rounded rounded-b-none ">
+        <div className="self-center p-2">
+          <StyledOcticon icon={conclusionToIcon(job.conclusion)} />
+        </div>
+        <div className="p-2 text-center font-bold flex-1">{job.name}</div>
+      </div>
+      <div className="p-2">
+        <ul>
+          {job.steps.map((step, stepIdx) => (
+            <li key={stepIdx}>
+              <Step step={step} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 export const Step: React.FC<{
   step: RuntimeStep;
@@ -137,66 +223,7 @@ export const WorkflowExecution: React.FC<{
           {jobGroups.map((jobGroup, groupIdx) => (
             <div key={groupIdx} className="flex flex-row justify-center py-8">
               {jobGroup.map((job) => (
-                <div
-                  key={job.id}
-                  className="border border-gray-500 rounded bg-white shadow relative mr-12"
-                  style={{ width: "240px" }}
-                >
-                  <div
-                    className="absolute bg-gray-200 rounded-t-full border border-b-0 border-gray-500"
-                    style={{
-                      width: "20px",
-                      height: "10px",
-                      top: "-10px",
-                      left: "20px",
-                    }}
-                  >
-                    <div
-                      className={`absolute bg-gray-600 rounded-full ci-${
-                        id.current
-                      }-${makeSafeForCSS(job.id)}`}
-                      style={{
-                        top: "4px",
-                        left: "4px",
-                        width: "10px",
-                        height: "10px",
-                      }}
-                    ></div>
-                  </div>
-                  <div
-                    className="absolute rounded-b-full shadow bg-white border border-t-0"
-                    style={{
-                      width: "20px",
-                      height: "10px",
-                      bottom: "-9.5px",
-                      right: "20px",
-                    }}
-                  >
-                    <div
-                      className={`absolute bg-blue-400 rounded-full co-${
-                        id.current
-                      }-${makeSafeForCSS(job.id)}`}
-                      style={{
-                        bottom: "4px",
-                        left: "4px",
-                        width: "10px",
-                        height: "10px",
-                      }}
-                    ></div>
-                  </div>
-                  <div className="p-2 bg-gray-200 rounded rounded-b-none text-center font-bold">
-                    {job.name}
-                  </div>
-                  <div className="p-2">
-                    <ul>
-                      {job.steps.map((step, stepIdx) => (
-                        <li key={stepIdx}>
-                          <Step step={step} />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                <Job key={job.id} workflowVisId={id.current} job={job} />
               ))}
             </div>
           ))}
