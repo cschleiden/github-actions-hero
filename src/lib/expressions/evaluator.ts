@@ -18,7 +18,18 @@ import {
 } from "./parser";
 
 export interface IExpressionContext {
-  contexts: { [contextName: string]: { [id: string]: {} } };
+  contexts: {
+    github: any;
+    // TODO: Document and define when these are set
+    env?: any;
+    job?: any;
+    steps?: any;
+    runner?: any;
+    secrets?: any;
+    strategy?: any;
+    matrix?: any;
+    needs?: any;
+  };
 }
 
 /**

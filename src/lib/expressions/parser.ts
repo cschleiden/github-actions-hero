@@ -12,9 +12,14 @@ const LSquare = chevrotain.createToken({ name: "LSquare", pattern: /\[/ });
 const RSquare = chevrotain.createToken({ name: "RSquare", pattern: /]/ });
 const Comma = chevrotain.createToken({ name: "Comma", pattern: /,/ });
 
+/**
+ * Expressions cannot use arbitrary variables, everything needs to be access via a context,
+ * so define all supported ones.
+ * see https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
+ */
 const Context = chevrotain.createToken({
   name: "Context",
-  pattern: /github|needs|job|secrets/,
+  pattern: /github|env|job|steps|runner|secrets|strategy|matrix|needs/,
 });
 const Dot = chevrotain.createToken({ name: "Dot", pattern: /\./ });
 const ContextMember = chevrotain.createToken({
