@@ -15,6 +15,8 @@ export interface RunStep {
   shell?: any;
 }
 
+export type Expression = string;
+
 export interface UsesStep {
   uses: string;
 }
@@ -22,7 +24,7 @@ export interface UsesStep {
 export type Step = {
   id?: string;
 
-  if?: any;
+  if?: Expression;
 
   name?: string;
 
