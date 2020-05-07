@@ -36,15 +36,28 @@ export interface RuntimeDockerStep {
 
 export type RuntimeStep = RuntimeRunStep | RuntimeUsesStep | RuntimeDockerStep;
 
+export enum State {
+  Queued,
+  Running,
+  Done,
+}
+
+export enum Conclusion {
+  Success,
+  Failure,
+  Skipped,
+}
+
 export interface RuntimeJob {
   id: string;
   name: string;
 
   steps: RuntimeStep[];
 
-  state: any;
-  conclusion: any;
+  state: State;
+  conclusion: Conclusion;
 
+  /** Used for display purposes, distance from the root */
   level: number;
 }
 
