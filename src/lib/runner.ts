@@ -2,10 +2,12 @@ import GitHubPushContext from "../data/push-payload.json";
 import { replaceExpressions } from "./expressions";
 import { IExpressionContext } from "./expressions/evaluator";
 import {
+  Conclusion,
   Event,
   RuntimeEnv,
   RuntimeModel,
   RuntimeStep,
+  State,
   StepType,
 } from "./runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "./workflow";
@@ -50,9 +52,10 @@ export function run(
       id: jobId,
       name: ev(jobDef.name) || jobId,
       steps: _executeSteps(jobDef.steps),
-      state: "finished",
-      conclusion: "success",
+      state: State.Done,
+      conclusion: Conclusion.Success,
       level,
+      dependsOn: Array.isArray(jobDef.needs) ? jobDef.needs : [jobDef.needs],
     });
   }
 

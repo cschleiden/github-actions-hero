@@ -59,6 +59,9 @@ export interface RuntimeJob {
 
   /** Used for display purposes, distance from the root */
   level: number;
+
+  /** Ids of jobs this job depends on */
+  dependsOn: string[];
 }
 
 export interface RuntimeModel {
