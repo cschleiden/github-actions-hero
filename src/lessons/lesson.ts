@@ -48,7 +48,8 @@ export function lessonSolved(lesson: Lesson, r: RuntimeModel[]): boolean {
           x.jobs.some((job) =>
             job.steps.some(
               (step) =>
-                step.stepType === StepType.Run && step.run === requiredRun
+                (step.stepType === StepType.Run && step.run === requiredRun) ||
+                (step.stepType === StepType.Uses && step.uses === requiredRun)
             )
           )
         )

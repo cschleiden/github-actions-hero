@@ -120,6 +120,13 @@ export const Step: React.FC<{
           <code>$ {step.run}</code>
         </div>
       );
+
+    case StepType.Uses:
+      return (
+        <div className="p-1 text-sm">
+          Run: <code>{step.uses}</code>
+        </div>
+      );
   }
 
   return <div>Step</div>;
