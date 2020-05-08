@@ -89,14 +89,9 @@ const PlaygroundPage: NextPage = () => {
           minWidth: "40vw",
         }}
       >
-        <div className="flex justify-center p-3">
-          <h1>GitHub Actions 🦸</h1>
-        </div>
-        {/* Header */}
-        <div className="flex items-center">
-          <div className="flex-1 flex justify-start ">
-            <h2>Playground</h2>
-          </div>
+        <div className="text-center p-3">
+          <h1 className="m-0">GitHub Actions Hero</h1>
+          <h2>Playground</h2>
         </div>
 
         <div className="flex flex-col flex-1">
