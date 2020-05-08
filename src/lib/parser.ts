@@ -24,6 +24,14 @@ export function parse(input: string): Workflow {
 
 export class ParseError extends Error {
   constructor(public errors: Ajv.ErrorObject[]) {
-    super(`Validation failed: ${ajv.errorsText(errors)}`);
+    // Trying to show the most specific validation error first, take the one with
+    // the longest schema path.
+    super(
+      ajv.errorsText(
+        errors
+          .sort((a, b) => a.schemaPath.length - b.schemaPath.length)
+          .slice(-1)
+      )
+    );
   }
 }

@@ -20,7 +20,7 @@ export default class ReactConnectElements extends PureComponent<{
   };
 
   state = {
-    querySelector: "body",
+    querySelector: undefined,
   };
 
   svgContainer = React.createRef<HTMLDivElement>();

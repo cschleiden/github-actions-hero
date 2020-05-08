@@ -70,7 +70,7 @@ const PlaygroundPage: NextPage = () => {
   try {
     for (const event of defaultEvents) {
       const result = run(
-        [event],
+        event,
         `.github/workflows/workflow.yaml`,
         parsedWorkflow
       );
@@ -112,9 +112,10 @@ const PlaygroundPage: NextPage = () => {
         className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen p-12 flex flex-row"
         style={{ minWidth: "60vw" }}
       >
-        {defaultEvents.map((event) => (
+        {defaultEvents.map((event, idx) => (
           <WorkflowExecution
             key={event.event}
+            id={idx}
             events={[event]}
             executionModel={workflowExecution[event.event]}
           />

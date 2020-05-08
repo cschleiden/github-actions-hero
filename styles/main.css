@@ -11,11 +11,15 @@ body {
 }
 
 h1 {
-  @apply text-5xl font-bold m-6
+  @apply text-5xl font-bold m-6;
 }
 
 h2 {
-  @apply text-3xl font-bold
+  @apply text-3xl font-bold;
+}
+
+h3 {
+  @apply font-bold;
 }
 
 .CodeMirror {

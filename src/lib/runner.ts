@@ -15,7 +15,7 @@ import { Job, JobMap, On, Step, Workflow } from "./workflow";
 export class RunError extends Error {}
 
 export function run(
-  events: Event[],
+  event: Event,
   workflowFilename: string,
   workflow: Workflow
 ): RuntimeModel {
@@ -42,12 +42,13 @@ export function run(
   };
 
   const result: RuntimeModel = {
+    event,
     name: ev(workflow.name) || workflowFilename,
     jobs: [],
   };
 
   // Check if any event matches
-  if (!events.some((event) => _match(event.event, workflow.on))) {
+  if (!_match(event, workflow.on)) {
     return result;
   }
 
@@ -150,13 +151,28 @@ export function _executeSteps(steps: Step[]): RuntimeStep[] {
   });
 }
 
-export function _match(event: string, on: On): boolean {
+export function _match(event: Event, on: On): boolean {
   if (typeof on === "string") {
-    return event === on;
+    return event.event === on;
   } else if (Array.isArray(on)) {
-    return on.some((e) => e === event);
+    return on.some((e) => e === event.event);
   } else {
-    return !!on[event];
+    // Map, check for other properties
+    if (!on[event.event]) {
+      return false;
+    }
+
+    switch (event.event) {
+      case "pull_request":
+        if (!!on["pull_request"]["branches"]) {
+          // TODO: Support glob filtering
+          const branches: string[] = on["pull_request"]["branches"];
+          return (
+            branches.some((b) => b === "*") ||
+            event.branches.some((b) => branches.indexOf(b) !== -1)
+          );
+        }
+    }
   }
 }
 

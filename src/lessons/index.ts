@@ -4,9 +4,13 @@ export const Lessons: Lesson[] = [
   {
     title: `Run on push`,
 
-    description: `Every workflow runs when a certain event is triggered. To start, let's create a workflow that runs on every \`push\` to the current repository.`,
+    description: `Workflows [run](https://help.github.com/en/actions/reference/events-that-trigger-workflows#about-workflow-events) when a specific activity happens on GitHub, at a scheduled time, or when an event outside of GitHub occurs.
 
-    workflow: `name: Lesson 1
+Every workflow declares which event should trigger it by setting [\`on\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#on) to a string identifying an event.
+
+To get started, let's run this workflow whenever the \`push\` event occurs.`,
+
+    workflow: `name: For every push
 
 @on: @
 
@@ -21,19 +25,15 @@ jobs:
         event: "push",
       },
     ],
-
-    runtimeModel: {
-      name: "Lesson 1",
-      jobs: [],
-    },
   },
   {
     title: `Run for multiple events`,
 
-    description:
-      "Workflows can be run for multiple triggers. Let's change our workflow so that in addition to `push` it also runs whenever the `issues` event occurs.",
+    description: `Workflows can also run when any of [multiple events](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-using-a-list-of-events) occur.
 
-    workflow: `name: Lesson 2
+Currently this workflow runs on every \`push\`, update it so that is also runs whenever any of the \`issues\` in the repository is modified.`,
+
+    workflow: `name: Multiple Events
 
 @on: [push] @
 
@@ -51,18 +51,67 @@ jobs:
         event: "issues",
       },
     ],
+  },
+  {
+    title: `Validate pull requests`,
 
-    runtimeModel: {
-      name: "Lesson 2",
-      jobs: [],
+    description: `We have seen that workflows can run when a single event, or when one of multiple events happens. It is also possible to limit workflow execution to certain [branches or tags](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestbranchestags).
+
+This workflow should run only when a \`pull_request\` to the \`master\` branch is opened.
+`,
+
+    workflow: `name: Pull Requests to master
+
+on:
+  pull_request:
+    branches:
+@      - '*'@
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Success!"`,
+
+    events: [
+      {
+        event: "pull_request",
+        branches: ["master"],
+      },
+      {
+        event: "pull_request",
+        branches: ["develop"],
+      },
+    ],
+
+    success: (r) => {
+      console.log(r);
+      return (
+        r
+          .filter(
+            (x) =>
+              x.event.event === "pull_request" &&
+              x.event.branches.indexOf("develop") !== -1
+          )
+          .every((x) => x.jobs.length === 0) &&
+        r
+          .filter(
+            (x) =>
+              x.event.event === "pull_request" &&
+              x.event.branches.indexOf("master") !== -1
+          )
+          .every((x) => x.jobs.length > 0)
+      );
     },
   },
   {
-    title: `Run for multiple events`,
+    title: `Execute shell scripts`,
 
-    description: `Workflows can run arbitrary shell commands. Let's have our workflow execute the \`./scriptDeploy.sh\` script.`,
+    description: `So far our workflows have just \`echo\`'d \`"Success!\`. That's great but doesn't provide that much value. Often you want build some code, or deploy a service.
 
-    workflow: `name: Lesson 3
+As an example, let's have our workflow execute the \`./scriptDeploy.sh\` shell script.`,
+
+    workflow: `name: Deploy
 
 on: [push]
 
@@ -81,57 +130,21 @@ jobs:
     ],
 
     success: `./scriptDeploy.sh`,
-
-    runtimeModel: {
-      name: "Lesson 3",
-      jobs: [],
-    },
   },
   {
-    title: `Multiple jobs`,
+    title: `Scheduled workflows`,
 
-    description: "Now, let's have our workflow say 'Success'. ",
+    description: `Workflows can also run at specific times. GitHub Actions supports [POSIX cron syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule). Workflows can run at most every 5 minutes.`,
 
-    workflow: `name: Lesson 3
-
-on: [push]
-
-jobs:
-  lesson4-1:
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "Job 1"
-  lesson4-2:
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "Job 2"
-  lesson4-3:
-    runs-on: ubuntu-latest
-    needs: [lesson4-2]
-    steps:
-    - run: echo "Job 3"
-  lesson4-4:
-    runs-on: ubuntu-latest
-    needs: [lesson4-3]
-    steps:
-    - run: echo "Job 4"
-  lesson4-5:
-    runs-on: ubuntu-latest
-    needs: [lesson4-3]
-    steps:
-    - run: echo "Job 5"
-    @
-`,
+    workflow: `on:
+  schedule:
+@    - cron:  ''`,
 
     events: [
       {
-        event: "push",
+        event: "schedule",
+        cron: "*/15 * * * *",
       },
     ],
-
-    runtimeModel: {
-      name: "Lesson 4",
-      jobs: [],
-    },
   },
 ];

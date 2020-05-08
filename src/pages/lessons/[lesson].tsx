@@ -1,4 +1,5 @@
 import { ButtonPrimary, Flash, Pagination } from "@primer/components";
+import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import Router from "next/router";
@@ -7,10 +8,9 @@ import ReactMarkdown from "react-markdown";
 import { WorkflowExecution } from "../../components/workflowExecution";
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
-import { parse } from "../../lib/parser";
+import { parse, ParseError } from "../../lib/parser";
 import { run } from "../../lib/runner";
-import { RuntimeModel } from "../../lib/runtimeModel";
-import { Workflow } from "../../lib/workflow";
+import { Event, RuntimeModel } from "../../lib/runtimeModel";
 
 const DynamicEditor = dynamic(
   () => import("../../components/workflowEditor").then((x) => x.Editor),
@@ -20,55 +20,88 @@ const DynamicEditor = dynamic(
   }
 );
 
-const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
-  const l = Lessons[lesson - 1];
-
-  const [input, setInput] = React.useState(l.workflow);
-
-  let parsedWorkflow: Workflow;
-  let outcome: boolean | undefined;
+function _run(
+  events: Event[],
+  input: string
+): {
+  workflowExecution: Map<Event, RuntimeModel>;
+  err: Error | undefined;
+} {
+  let workflowExecution = new Map<Event, RuntimeModel>();
+  let err: Error | undefined;
 
   try {
-    parsedWorkflow = parse(input);
-  } catch (e) {
-    // TODO: Show in UI
-    console.log("Parsing error", e);
-  }
+    const parsedWorkflow = parse(input);
 
-  let workflowExecution: { [trigger: string]: RuntimeModel } = {};
-
-  // Run
-  try {
-    for (const event of l.events) {
+    for (const event of events) {
       const result = run(
-        [event],
-        `.github/workflows/lesson-${lesson}.yaml`,
+        event,
+        `.github/workflows/workflow.yaml`,
         parsedWorkflow
       );
 
-      workflowExecution[event.event] = result;
+      workflowExecution.set(event, result);
     }
-
-    outcome = lessonSolved(l, workflowExecution);
   } catch (e) {
-    console.log("Runtime error", e);
+    err = e;
   }
+
+  return {
+    workflowExecution,
+    err,
+  };
+}
+
+const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
+  const l = Lessons[lesson - 1];
+
+  const [outcome, setOutcome] = React.useState<boolean | undefined>();
+  const [err, setErr] = React.useState<Error | undefined>();
+
+  const [workflowExecution, setWorkflowExecution] = React.useState<
+    Map<Event, RuntimeModel>
+  >();
+
+  React.useEffect(() => {
+    // Perform initial run
+    const { workflowExecution } = _run(l.events, l.workflow.replace(/@/g, ""));
+    setErr(undefined);
+    setOutcome(undefined);
+    setWorkflowExecution(workflowExecution);
+  }, [l]);
+
+  const onChange = React.useCallback(
+    (input: string) => {
+      const { workflowExecution, err } = _run(l.events, input);
+
+      setWorkflowExecution(workflowExecution);
+      setErr(err);
+      if (!err) {
+        const outcome = lessonSolved(l, Array.from(workflowExecution.values()));
+        setOutcome(outcome);
+      } else {
+        setOutcome(undefined);
+      }
+    },
+    [l]
+  );
 
   return (
     <div className="flex flex-row">
       <div
-        className="flex flex-col p-4"
+        className="flex-1 flex flex-col p-4"
         style={{
-          minWidth: "40vw",
+          minWidth: "45vw",
         }}
       >
         <div className="flex justify-center p-3">
-          <h1>GitHub Actions 🦸</h1>
+          <h1>GitHub Actions Hero</h1>
         </div>
         {/* Header */}
         <div className="flex items-center">
-          <div className="flex-1 flex justify-start ">
+          <div className="flex-1 justify-start">
             <h2>Lesson {lesson}</h2>
+            <h3>{l.title}</h3>
           </div>
           <div className="flex flex-initial justify-end">
             <Pagination
@@ -89,49 +122,54 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
 
         <div className="flex flex-col flex-1">
-          <DynamicEditor workflow={l.workflow} change={(v) => setInput(v)} />
+          <DynamicEditor workflow={l.workflow} change={onChange} />
         </div>
 
-        <div>
-          {outcome !== undefined ? (
-            outcome ? (
-              <Flash scheme="green">
-                <div className="flex items-center">
-                  <div className="flex-1">
-                    Success! Now move on to the next one.
-                  </div>
-                  <div className="self-end">
-                    <ButtonPrimary
-                      onClick={() =>
-                        Router.push(
-                          `/lessons/[lesson]`,
-                          `/lessons/${lesson + 1}`
-                        )
-                      }
-                    >
-                      Next
-                    </ButtonPrimary>
-                  </div>
+        <div className="mt-2">
+          {outcome && (
+            <Flash scheme="green">
+              <div className="flex items-center">
+                <div className="flex-1">
+                  Success! Now move on to the next one.
                 </div>
-              </Flash>
-            ) : (
-              <Flash scheme="red">Please try again.</Flash>
-            )
-          ) : null}
+                <div className="self-end">
+                  <ButtonPrimary
+                    onClick={() =>
+                      Router.push(`/lessons/[lesson]`, `/lessons/${lesson + 1}`)
+                    }
+                  >
+                    Next
+                  </ButtonPrimary>
+                </div>
+              </div>
+            </Flash>
+          )}
+          {err && (
+            <Flash scheme="red">
+              {(() => {
+                switch (true) {
+                  case err instanceof YAMLException:
+                    return <div>{err.message}</div>;
+
+                  case err instanceof ParseError:
+                    return <div>{err.message}</div>;
+                }
+              })()}
+            </Flash>
+          )}
         </div>
       </div>
 
-      <div
-        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen p-12 flex flex-row"
-        style={{ minWidth: "60vw" }}
-      >
-        {l.events.map((event) => (
-          <WorkflowExecution
-            key={event.event}
-            events={[event]}
-            executionModel={workflowExecution[event.event]}
-          />
-        ))}
+      <div className="flex-1 bg-gray-300 h-screen p-12 flex flex-row">
+        {workflowExecution &&
+          l.events.map((event, idx) => (
+            <WorkflowExecution
+              key={`${event.event}-${idx}`}
+              id={idx}
+              events={[event]}
+              executionModel={workflowExecution.get(event)}
+            />
+          ))}
       </div>
     </div>
   );

@@ -1,7 +1,13 @@
 export interface PushEvent {
   event: "push";
 
-  branch?: string;
+  branches?: string[];
+}
+
+export interface PullRequestEvent {
+  event: "pull_request";
+
+  branches?: string[];
 }
 
 export interface IssuesEvent {
@@ -10,7 +16,13 @@ export interface IssuesEvent {
   action?: "created" | "updated" | "removed";
 }
 
-export type Event = PushEvent | IssuesEvent;
+export interface ScheduleEvent {
+  event: "schedule";
+
+  cron: string;
+}
+
+export type Event = PushEvent | PullRequestEvent | IssuesEvent | ScheduleEvent;
 
 export enum StepType {
   Uses,
@@ -65,6 +77,8 @@ export interface RuntimeJob {
 }
 
 export interface RuntimeModel {
+  event: Event;
+
   name: string;
 
   jobs: RuntimeJob[];

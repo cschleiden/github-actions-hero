@@ -1,5 +1,5 @@
-import { StyledOcticon } from "@primer/components";
-import { Check, Icon, Skip } from "@primer/octicons-react";
+import { BranchName, StyledOcticon } from "@primer/components";
+import Octicon, { Check, GitBranch, Icon, Skip } from "@primer/octicons-react";
 import dynamic from "next/dynamic";
 import * as React from "react";
 import {
@@ -14,7 +14,6 @@ import {
 const DynamicConnections = dynamic<any>(
   () => import("../external/react-connect-elements/index"),
   {
-    loading: () => <p>Loading ...</p>,
     ssr: false,
   }
 );
@@ -147,53 +146,68 @@ function groupJobs(jobs: RuntimeJob[]): RuntimeJob[][] {
   return result;
 }
 
-let id = 0;
-function getId(): number {
-  return ++id;
-}
-
 export const WorkflowExecution: React.FC<{
+  id: number;
   events: Event[];
   executionModel: RuntimeModel;
-}> = ({ events, executionModel }) => {
-  const id = React.useRef(getId());
-
+}> = ({ id, events, executionModel }) => {
+  const [connections, setConnections] = React.useState<[string, string][]>([]);
   const jobGroups = groupJobs(executionModel?.jobs || []);
-  let connections: [string, string][] = [];
 
-  // Connect all first-level jobs to the events
-  events.forEach((e) => {
-    jobGroups[0]?.forEach((job) => {
-      connections.push([
-        `.c-${id.current}-${makeSafeForCSS(e.event)}`,
-        `.ci-${id.current}-${makeSafeForCSS(job.id)}`,
-      ]);
-    });
-  });
+  React.useEffect(() => {
+    let c: [string, string][] = [];
 
-  executionModel?.jobs
-    .filter((x) => x.level > 0)
-    .forEach((job) => {
-      job.dependsOn.forEach((dependendJobId) => {
-        connections.push([
-          `.ci-${id.current}-${makeSafeForCSS(job.id)}`,
-          `.co-${id.current}-${makeSafeForCSS(dependendJobId)}`,
+    // Connect all first-level jobs to the events
+    events.forEach((e) => {
+      jobGroups[0]?.forEach((job) => {
+        c.push([
+          `.c-${id}-${makeSafeForCSS(e.event)}`,
+          `.ci-${id}-${makeSafeForCSS(job.id)}`,
         ]);
       });
     });
 
+    executionModel?.jobs
+      .filter((x) => x.level > 0)
+      .forEach((job) => {
+        job.dependsOn.forEach((dependendJobId) => {
+          c.push([
+            `.ci-${id}-${makeSafeForCSS(job.id)}`,
+            `.co-${id}-${makeSafeForCSS(dependendJobId)}`,
+          ]);
+        });
+      });
+
+    setConnections(c);
+  }, [events, executionModel]);
+
   return (
     <>
-      <div className={`bg-gray-300 p-3 workflow-${id.current} relative`}>
+      <div className={`bg-gray-300 p-3 workflow-${id} relative`}>
         <div className="events py-2 flex justify-center">
           {/* Events for workflow */}
           {events.map((e) => (
             <div
               key={e.event}
-              className="border border-gray-500 rounded bg-gray-500 shadow relative p-3 text-center font-bold  mr-12"
+              className="border border-gray-500 rounded bg-gray-500 shadow relative p-3 mr-12 text-center"
               style={{ width: "240px" }}
             >
-              {e.event}
+              <div className="font-bold">{e.event}</div>
+              {(() => {
+                switch (e.event) {
+                  case "push":
+                  case "pull_request":
+                    return (
+                      (!!e.branches && (
+                        <div>
+                          <Octicon icon={GitBranch} className="mr-1" />
+                          <BranchName>{e.branches.join()}</BranchName>
+                        </div>
+                      )) ||
+                      null
+                    );
+                }
+              })()}
 
               <div
                 className="absolute rounded-b-full shadow bg-gray-500 border border-gray-500 border-t-0"
@@ -205,9 +219,9 @@ export const WorkflowExecution: React.FC<{
                 }}
               >
                 <div
-                  className={`absolute bg-gray-200 rounded-full c-${
-                    id.current
-                  }-${makeSafeForCSS(e.event)}`}
+                  className={`absolute bg-gray-200 rounded-full c-${id}-${makeSafeForCSS(
+                    e.event
+                  )}`}
                   style={{
                     bottom: "4px",
                     left: "4px",
@@ -223,21 +237,19 @@ export const WorkflowExecution: React.FC<{
           {jobGroups.map((jobGroup, groupIdx) => (
             <div key={groupIdx} className="flex flex-row justify-center py-8">
               {jobGroup.map((job) => (
-                <Job key={job.id} workflowVisId={id.current} job={job} />
+                <Job key={job.id} workflowVisId={id} job={job} />
               ))}
             </div>
           ))}
         </div>
-        {/* <div>
-        <pre>{executionModel && JSON.stringify(executionModel, null, 2)}</pre>
-      </div> */}
+        {connections && connections.length > 0 && (
+          <DynamicConnections
+            selector={`.workflow-${id}`}
+            elements={connections.map((c) => ({ from: c[0], to: c[1] }))}
+            strokeWidth={2}
+          />
+        )}
       </div>
-
-      <DynamicConnections
-        selector={`.workflow-${id.current}`}
-        elements={connections.map((c) => ({ from: c[0], to: c[1] }))}
-        strokeWidth={2}
-      />
     </>
   );
 };
