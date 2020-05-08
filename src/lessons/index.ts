@@ -85,7 +85,6 @@ jobs:
     ],
 
     success: (r) => {
-      console.log(r);
       return (
         r
           .filter(
