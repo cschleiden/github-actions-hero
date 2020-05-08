@@ -73,7 +73,7 @@ export const Editor: React.FC<{
           text: workflow,
         },
       ]
-    : getRanges("@", workflow);
+    : getRanges("%", workflow);
 
   return (
     <div className={style.editorWrapper}>

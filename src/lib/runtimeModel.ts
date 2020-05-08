@@ -46,7 +46,11 @@ export interface RuntimeDockerStep {
   stepType: StepType.Docker;
 }
 
-export type RuntimeStep = RuntimeRunStep | RuntimeUsesStep | RuntimeDockerStep;
+export type RuntimeStep = (
+  | RuntimeRunStep
+  | RuntimeUsesStep
+  | RuntimeDockerStep
+) & { skipped?: boolean };
 
 export enum State {
   Queued,

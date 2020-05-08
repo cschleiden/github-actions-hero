@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import { WorkflowExecution } from "../../components/workflowExecution";
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
+import { ExpressionError } from "../../lib/expressions";
 import { parse, ParseError } from "../../lib/parser";
 import { run } from "../../lib/runner";
 import { Event, RuntimeModel } from "../../lib/runtimeModel";
@@ -64,7 +65,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
 
   React.useEffect(() => {
     // Perform initial run
-    const { workflowExecution } = _run(l.events, l.workflow.replace(/@/g, ""));
+    const { workflowExecution } = _run(l.events, l.workflow.replace(/%/g, ""));
     setErr(undefined);
     setOutcome(undefined);
     setWorkflowExecution(workflowExecution);
@@ -122,7 +123,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
 
         <div className="flex flex-col flex-1">
-          <DynamicEditor workflow={l.workflow} change={onChange} />
+          <DynamicEditor key={lesson} workflow={l.workflow} change={onChange} />
         </div>
 
         <div className="mt-2">
@@ -149,10 +150,13 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
               {(() => {
                 switch (true) {
                   case err instanceof YAMLException:
-                    return <div>{err.message}</div>;
+                    return <div>Parsing error: {err.message}</div>;
 
                   case err instanceof ParseError:
-                    return <div>{err.message}</div>;
+                    return <div>Validation error: {err.message}</div>;
+
+                  case err instanceof ExpressionError:
+                    return <div>Expression error: {err.message}</div>;
                 }
               })()}
             </Flash>

@@ -113,23 +113,26 @@ export const Job: React.FC<{
 export const Step: React.FC<{
   step: RuntimeStep;
 }> = ({ step }) => {
+  let content: JSX.Element = null;
+
   switch (step.stepType) {
     case StepType.Run:
-      return (
-        <div className="p-1 text-sm">
-          <code>$ {step.run}</code>
-        </div>
-      );
+      content = <code>$ {step.run}</code>;
+      break;
 
     case StepType.Uses:
-      return (
-        <div className="p-1 text-sm">
-          Run: <code>{step.uses}</code>
-        </div>
-      );
+      <>
+        Run: <code>{step.uses}</code>
+      </>;
+      break;
   }
 
-  return <div>Step</div>;
+  return (
+    <div className={`p-1 text-sm ${step.skipped ? "opacity-50" : ""}`}>
+      {step.skipped ? <StyledOcticon icon={Skip} /> : null}
+      {content}
+    </div>
+  );
 };
 
 /**

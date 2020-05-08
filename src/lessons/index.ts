@@ -12,7 +12,7 @@ To get started, let's run this workflow whenever the \`push\` event occurs.`,
 
     workflow: `name: For every push
 
-@on: @
+%on: %
 
 jobs:
   say-hello:
@@ -35,7 +35,7 @@ Currently this workflow runs on every \`push\`, update it so that is also runs w
 
     workflow: `name: Multiple Events
 
-@on: [push] @
+%on: [push] %
 
 jobs:
   lesson2:
@@ -65,7 +65,7 @@ This workflow should run only when a \`pull_request\` to the \`master\` branch i
 on:
   pull_request:
     branches:
-@      - '*'@
+%      - '*'%
 
 jobs:
   say-hello:
@@ -118,7 +118,7 @@ jobs:
   execute:
     runs-on: ubuntu-latest
     steps:
-    @
+    %
 
 `,
 
@@ -145,7 +145,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    @
+    %
     - run: ./build.sh
 `,
 
@@ -155,7 +155,7 @@ jobs:
       },
     ],
 
-    success: `actions/checkout@v2`,
+    success: `actions/checkout%v2`,
   },
   {
     title: `Scheduled workflows`,
@@ -164,7 +164,7 @@ jobs:
 
     workflow: `on:
   schedule:
-@    - cron:  ''`,
+%    - cron:  ''`,
 
     events: [
       {
@@ -172,5 +172,33 @@ jobs:
         cron: "*/15 * * * *",
       },
     ],
+  },
+  {
+    title: `Skip steps`,
+
+    description: `Sometimes you want to skip certain steps. Use an expression to run \`build.sh\` only when the current ref is \`refs/heads/master\`.`,
+
+    workflow: `name: Skip Step
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: ./build.sh
+      if: \${{ false }} %
+    - run: echo "Hello!"
+`,
+
+    events: [
+      {
+        event: "push",
+        branch: "master",
+      },
+    ],
+
+    success: `actions/checkout%v2`,
   },
 ];

@@ -4,7 +4,6 @@ import { IExpressionContext } from "./expressions/evaluator";
 import {
   Conclusion,
   Event,
-  RuntimeEnv,
   RuntimeModel,
   RuntimeStep,
   State,
@@ -13,6 +12,17 @@ import {
 import { Job, JobMap, On, Step, Workflow } from "./workflow";
 
 export class RunError extends Error {}
+
+function evIf(
+  input: string | undefined,
+  ctx: IExpressionContext
+): boolean | undefined {
+  if (!input) {
+    return undefined;
+  }
+
+  return !!evaluateExpression(input, ctx);
+}
 
 export function run(
   event: Event,
@@ -31,14 +41,6 @@ export function run(
     }
 
     return replaceExpressions(input, ctx);
-  };
-
-  const evIf = (input?: string): string | undefined => {
-    if (!input) {
-      return input;
-    }
-
-    return evaluateExpression(input, ctx).result;
   };
 
   const result: RuntimeModel = {
@@ -61,7 +63,7 @@ export function run(
 
     // Should we run this job?
     if (!!jobDef.if) {
-      if (!evIf(jobDef.if)) {
+      if (!evIf(jobDef.if, ctx)) {
         conclusion = Conclusion.Skipped;
       }
     }
@@ -69,7 +71,7 @@ export function run(
     result.jobs.push({
       id: jobId,
       name: ev(jobDef.name) || jobId,
-      steps: _executeSteps(jobDef.steps),
+      steps: _executeSteps(jobDef.steps, ctx),
       state: State.Done,
       conclusion,
       level,
@@ -131,23 +133,34 @@ export function _sortJobs(jobs: JobMap): { jobId: string; level: number }[] {
   return result;
 }
 
-export function _executeSteps(steps: Step[]): RuntimeStep[] {
+export function _executeSteps(
+  steps: Step[],
+  ctx: IExpressionContext
+): RuntimeStep[] {
   return steps.map((step) => {
+    let runStep: RuntimeStep;
+
     if ("run" in step) {
-      return {
+      runStep = {
         stepType: StepType.Run,
         run: step.run,
       };
     } else if ("uses" in step) {
-      return {
+      runStep = {
         stepType: StepType.Uses,
         uses: step.uses,
       };
+    } else {
+      runStep = {
+        stepType: StepType.Docker,
+      };
     }
 
-    return {
-      stepType: StepType.Docker,
-    };
+    if (!!step.if) {
+      runStep.skipped = !evIf(step.if, ctx);
+    }
+
+    return runStep;
   });
 }
 
@@ -174,11 +187,4 @@ export function _match(event: Event, on: On): boolean {
         }
     }
   }
-}
-
-export function _evaluateExpression(
-  expression: string,
-  env: RuntimeEnv
-): string | boolean | number | null {
-  return false;
 }

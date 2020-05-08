@@ -14,7 +14,7 @@ const ctx = {
     },
   },
 };
-const ev = <T>(input: string): T => evaluateExpression(input, ctx).result;
+const ev = <T>(input: string): T => evaluateExpression(input, ctx);
 
 describe("expression parser", () => {
   it("numbers", () => {
