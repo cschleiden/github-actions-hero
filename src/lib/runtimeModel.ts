@@ -1,13 +1,13 @@
 export interface PushEvent {
   event: "push";
 
-  branches?: string[];
+  branch?: string;
 }
 
 export interface PullRequestEvent {
   event: "pull_request";
 
-  branches?: string[];
+  branch?: string;
 }
 
 export interface IssuesEvent {

@@ -169,7 +169,7 @@ export function _match(event: Event, on: On): boolean {
           const branches: string[] = on["pull_request"]["branches"];
           return (
             branches.some((b) => b === "*") ||
-            event.branches.some((b) => branches.indexOf(b) !== -1)
+            branches.indexOf(event.branch) !== -1
           );
         }
     }

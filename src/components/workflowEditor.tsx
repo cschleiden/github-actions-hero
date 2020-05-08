@@ -101,8 +101,10 @@ export const Editor: React.FC<{
             // Updates line numbers
             let start = 1;
             ranges.forEach((r, i) => {
-              editors.current[i].setOption("firstLineNumber", start);
-              start += editors.current[i].getValue().split("\n").length;
+              if (editors.current[i]) {
+                editors.current[i].setOption("firstLineNumber", start);
+                start += editors.current[i].getValue().split("\n").length;
+              }
             });
 
             change(v.join("\n").replace(/\t/g, " "));

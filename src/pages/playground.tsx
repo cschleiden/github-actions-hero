@@ -10,6 +10,7 @@ import { Workflow } from "../lib/workflow";
 const defaultEvents: Event[] = [
   {
     event: "push",
+    branch: "master",
   },
 ];
 

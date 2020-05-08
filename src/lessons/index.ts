@@ -76,11 +76,11 @@ jobs:
     events: [
       {
         event: "pull_request",
-        branches: ["master"],
+        branch: "master",
       },
       {
         event: "pull_request",
-        branches: ["develop"],
+        branch: "develop",
       },
     ],
 
@@ -90,14 +90,14 @@ jobs:
           .filter(
             (x) =>
               x.event.event === "pull_request" &&
-              x.event.branches.indexOf("develop") !== -1
+              x.event.branch.indexOf("develop") !== -1
           )
           .every((x) => x.jobs.length === 0) &&
         r
           .filter(
             (x) =>
               x.event.event === "pull_request" &&
-              x.event.branches.indexOf("master") !== -1
+              x.event.branch.indexOf("master") !== -1
           )
           .every((x) => x.jobs.length > 0)
       );

@@ -198,10 +198,10 @@ export const WorkflowExecution: React.FC<{
                   case "push":
                   case "pull_request":
                     return (
-                      (!!e.branches && (
+                      (!!e.branch && (
                         <div>
                           <Octicon icon={GitBranch} className="mr-1" />
-                          <BranchName>{e.branches.join()}</BranchName>
+                          <BranchName>{e.branch}</BranchName>
                         </div>
                       )) ||
                       null
