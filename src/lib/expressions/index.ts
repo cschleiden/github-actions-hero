@@ -15,11 +15,21 @@ export class ExpressionError extends Error {
   }
 }
 
+const expr = /\$\{\{(.*?)\}\}/gm;
+
+/**
+ * Evaluates a single expression with the given context
+ *
+ * @param expression Expression to evaluate, with or without ${{ }} marker
+ * @param context Context for evaluation
+ */
 export function evaluateExpression(
   expression: string,
   context: IExpressionContext
 ) {
-  expression = expression.replace(/\$\{\{(.*?)\}\}/gm, (_, g) => g);
+  // This expects a single expression in the form of "<expr>" or "${{ <expr> }}". Remove the
+  // ${{ }} markers
+  expression = expression.replace(expr, (_, g) => g);
 
   const lexResult = ExpressionLexer.tokenize(expression);
 
@@ -30,7 +40,7 @@ export function evaluateExpression(
   const cst = parser.expression();
 
   const result = evaluator.visit(cst, context);
-  console.log(expression, result);
+  // console.log(expression, result);
 
   if (lexResult.errors.length > 0 || parser.errors.length > 0) {
     throw new ExpressionError(lexResult.errors, parser.errors);
@@ -39,8 +49,13 @@ export function evaluateExpression(
   return result;
 }
 
-const expr = /\$\{\{(.*?)\}\}/gm;
-
+/**
+ * Evaluates and replaces zero or more expressions in a string. Expressions must be surrounded with
+ * ${{ <expr> }} and will be replaced with their evaluation result in the returned string.
+ *
+ * @param input String containing zero or more expression
+ * @param context Context for evaluation
+ */
 export function replaceExpressions(
   input: string,
   context: IExpressionContext

@@ -29,11 +29,11 @@ export class ParseError extends Error {
     // Trying to show the most specific validation error first, take the one with
     // the longest schema path.
     super(
-      ajv.errorsText(
+      `Validation failed: ${ajv.errorsText(
         errors
           .sort((a, b) => a.schemaPath.length - b.schemaPath.length)
           .slice(-1)
-      )
+      )}`
     );
   }
 }

@@ -163,12 +163,3 @@ describe("Runner", () => {
     });
   });
 });
-
-// describe("expressions", () => {
-//   it("constant values", () => {
-//     expect(_evaluateExpression("${{ false }}", {})).toBe(false);
-//     expect(_evaluateExpression("${{ true }}", {})).toBe(true);
-
-//     expect(_evaluateExpression("${{ 123 }}", {})).toBe(123);
-//   });
-// });
