@@ -1,11 +1,49 @@
 /** Generic map */
 export type KeyValueMap = { [key: string]: string | number | boolean };
 
-export interface OnTypes {
-  types: string[];
+export interface OnTypes<T extends string[]> {
+  types?: T;
 }
 
-export type On = string | string[] | { [on: string]: OnTypes };
+export interface OnBranches {
+  branches?: string[];
+  "branches-ignore"?: string[];
+
+  tags?: string[];
+  "tags-ignore"?: string[];
+}
+
+export interface OnPaths {
+  paths?: string[];
+  "paths-ignore"?: string[];
+}
+
+export type On =
+  | string
+  | string[]
+  | {
+      push?: OnBranches & OnPaths;
+      pull_request?: OnBranches &
+        OnTypes<
+          [
+            "assigned",
+            "unassigned",
+            "labeled",
+            "unlabeled",
+            "opened",
+            "edited",
+            "closed",
+            "reopened",
+            "synchronize",
+            "ready_for_review",
+            "locked",
+            "unlocked",
+            "review_requested",
+            "review_request_removed"
+          ]
+        > &
+        OnPaths;
+    };
 
 export interface RunStep {
   run: string;

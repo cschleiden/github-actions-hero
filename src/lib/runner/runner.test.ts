@@ -163,3 +163,59 @@ describe("Runner", () => {
     });
   });
 });
+
+describe("Branch filtering", () => {
+  it("with matching branch", () => {
+    const r = run(
+      { event: "push", branch: "features/foo" },
+      ".github/workflows/lesson.yaml",
+      {
+        on: {
+          push: {
+            branches: ["'features/*'"],
+          },
+        },
+        jobs: {
+          first: {
+            "runs-on": "ubuntu-latest",
+            steps: [
+              {
+                run: "echo 'Success'",
+              },
+            ],
+          },
+        },
+      }
+    );
+
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].name).toBe("first");
+  });
+});
+
+describe("Environment variables", () => {
+  describe("Workflow level", () => {
+    it("with name", () => {
+      const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+        name: "Lesson",
+        on: "push",
+        env: {
+          FOO: "Bar",
+        },
+        jobs: {
+          build: {
+            name: "${{ env.FOO }}",
+            "runs-on": "ubuntu-latest",
+            steps: [
+              {
+                run: "echo Hello",
+              },
+            ],
+          },
+        },
+      });
+
+      expect(r.name).toBe("BAR");
+    });
+  });
+});

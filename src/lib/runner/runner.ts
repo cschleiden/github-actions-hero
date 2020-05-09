@@ -10,9 +10,11 @@ import {
   StepType,
 } from "../runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "../workflow";
+import { filterBranches } from "./glob/glob";
 
 export class RunError extends Error {}
 
+/** Evaluate a single `if` expression */
 function evIf(
   input: string | undefined,
   ctx: IExpressionContext
@@ -166,8 +168,10 @@ export function _executeSteps(
 
 export function _match(event: Event, on: On): boolean {
   if (typeof on === "string") {
+    // Match a single event
     return event.event === on;
   } else if (Array.isArray(on)) {
+    // Match one of multiple events
     return on.some((e) => e === event.event);
   } else {
     // Map, check for other properties
@@ -176,14 +180,12 @@ export function _match(event: Event, on: On): boolean {
     }
 
     switch (event.event) {
+      case "push":
       case "pull_request":
-        if (!!on["pull_request"]["branches"]) {
+        if (!!on[event.event]["branches"]) {
           // TODO: Support glob filtering
-          const branches: string[] = on["pull_request"]["branches"];
-          return (
-            branches.some((b) => b === "*") ||
-            branches.indexOf(event.branch) !== -1
-          );
+          const branches: string[] = on[event.event]["branches"];
+          return filterBranches(branches, event.branch);
         }
     }
   }
