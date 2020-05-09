@@ -27,18 +27,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: echo "Job 2"
+    - run: echo "Optional step"
+      if: \${{ 1 == 2 }}
+    - run: echo "Job 2"
   lesson4-3:
     runs-on: ubuntu-latest
     needs: [lesson4-2]
     steps:
+    - uses: actions/checkout@v2
+    - run: echo "Job 3"
+    - run: echo "Job 3"
     - run: echo "Job 3"
   lesson4-4:
+    name: \${{ github.event_name }}-\${{ github.event.ref }}
     runs-on: ubuntu-latest
     needs: [lesson4-3]
     steps:
     - run: echo "Job 4"
   lesson4-5:
-    name: \${{ github.event_name }}-\${{ github.event.ref }}
+    name: Skipped jobx
     if: github.event_name == 'test'
     runs-on: ubuntu-latest
     needs: [lesson4-3]

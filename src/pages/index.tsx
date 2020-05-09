@@ -6,9 +6,16 @@ export default () => {
   return (
     <div className="flex flex-1 flex-col justify-center items-center h-screen">
       <h1>Become a GitHub Actions Hero</h1>
-      <Link href="/lessons/[lesson]" as="/lessons/1">
-        <ButtonPrimary>Get started</ButtonPrimary>
-      </Link>
+      <div className="flex flex-col items-center">
+        <Link href="/lessons/[lesson]" as="/lessons/1">
+          <ButtonPrimary variant="large" className="m-3">
+            Get started
+          </ButtonPrimary>
+        </Link>
+        <Link href="/playground">
+          <a>Playground</a>
+        </Link>
+      </div>
     </div>
   );
 };
