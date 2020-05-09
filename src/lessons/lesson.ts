@@ -56,5 +56,6 @@ export function lessonSolved(lesson: Lesson, r: RuntimeModel[]): boolean {
     );
   }
 
+  // Lesson provided a custom success check, run it.
   return lesson.success(r);
 }
