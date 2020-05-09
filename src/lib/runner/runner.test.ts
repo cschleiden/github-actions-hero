@@ -1,5 +1,15 @@
 import { RuntimeRunStep, RuntimeUsesStep, StepType } from "../runtimeModel";
+import { Job } from "../workflow";
 import { run } from "./runner";
+
+const defaultJob: Job = {
+  "runs-on": "ubuntu-latest",
+  steps: [
+    {
+      run: "echo Hello",
+    },
+  ],
+};
 
 describe("Runner", () => {
   it("with name", () => {
@@ -194,28 +204,24 @@ describe("Branch filtering", () => {
 });
 
 describe("Environment variables", () => {
-  describe("Workflow level", () => {
-    it("with name", () => {
-      const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
-        name: "Lesson",
-        on: "push",
-        env: {
-          FOO: "Bar",
-        },
-        jobs: {
-          build: {
-            name: "${{ env.FOO }}",
-            "runs-on": "ubuntu-latest",
-            steps: [
-              {
-                run: "echo Hello",
-              },
-            ],
+  it("job name", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      name: "Lesson",
+      on: "push",
+      env: {
+        FOO: "Bar",
+      },
+      jobs: {
+        build: {
+          ...defaultJob,
+          name: "${{ env.FOO }} ${{ env.JOB-FOO }}",
+          env: {
+            "JOB-FOO": "job-bar",
           },
         },
-      });
-
-      expect(r.name).toBe("BAR");
+      },
     });
+
+    expect(r.jobs[0].name).toBe("Bar job-bar");
   });
 });

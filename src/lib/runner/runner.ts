@@ -10,6 +10,7 @@ import {
   StepType,
 } from "../runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "../workflow";
+import { mergeEnv } from "./context";
 import { filterBranches } from "./glob/glob";
 
 export class RunError extends Error {}
@@ -26,6 +27,17 @@ function evIf(
   return !!evaluateExpression(input, ctx);
 }
 
+function _ev(
+  input: string | undefined,
+  ctx: IExpressionContext
+): string | undefined {
+  if (!input) {
+    return input;
+  }
+
+  return replaceExpressions(input, ctx);
+}
+
 export function run(
   event: Event,
   workflowFilename: string,
@@ -34,20 +46,15 @@ export function run(
   const ctx: IExpressionContext = {
     contexts: {
       github: GitHubPushContext,
+      env: {
+        ...workflow.env,
+      },
     },
-  };
-
-  const ev = (input?: string): string | undefined => {
-    if (!input) {
-      return input;
-    }
-
-    return replaceExpressions(input, ctx);
   };
 
   const result: RuntimeModel = {
     event,
-    name: ev(workflow.name) || workflowFilename,
+    name: _ev(workflow.name, ctx) || workflowFilename,
     jobs: [],
   };
 
@@ -60,20 +67,21 @@ export function run(
   const orderedJobs = _sortJobs(workflow.jobs);
   for (const { jobId, level } of orderedJobs) {
     const jobDef = workflow.jobs[jobId];
+    const jobCtx = mergeEnv(ctx, jobDef.env);
 
     let conclusion = Conclusion.Success;
 
     // Should we run this job?
     if (!!jobDef.if) {
-      if (!evIf(jobDef.if, ctx)) {
+      if (!evIf(jobDef.if, jobCtx)) {
         conclusion = Conclusion.Skipped;
       }
     }
 
     result.jobs.push({
       id: jobId,
-      name: ev(jobDef.name) || jobId,
-      steps: _executeSteps(jobDef.steps, ctx),
+      name: _ev(jobDef.name, jobCtx) || jobId,
+      steps: _executeSteps(jobDef.steps, jobCtx),
       state: State.Done,
       conclusion,
       level,
@@ -137,9 +145,11 @@ export function _sortJobs(jobs: JobMap): { jobId: string; level: number }[] {
 
 export function _executeSteps(
   steps: Step[],
-  ctx: IExpressionContext
+  jobCtx: IExpressionContext
 ): RuntimeStep[] {
   return steps.map((step) => {
+    const stepCtx = mergeEnv(jobCtx, step.env);
+
     let runStep: RuntimeStep;
 
     if ("run" in step) {
@@ -159,7 +169,7 @@ export function _executeSteps(
     }
 
     if (!!step.if) {
-      runStep.skipped = !evIf(step.if, ctx);
+      runStep.skipped = !evIf(step.if, stepCtx);
     }
 
     return runStep;
