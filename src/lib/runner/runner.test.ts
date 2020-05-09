@@ -1,9 +1,9 @@
+import { RuntimeRunStep, RuntimeUsesStep, StepType } from "../runtimeModel";
 import { run } from "./runner";
-import { RuntimeRunStep, RuntimeUsesStep, StepType } from "./runtimeModel";
 
 describe("Runner", () => {
   it("with name", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       name: "Lesson",
       on: "push",
       jobs: {},
@@ -13,7 +13,7 @@ describe("Runner", () => {
   });
 
   it("without name", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
       jobs: {},
     });
@@ -22,7 +22,7 @@ describe("Runner", () => {
   });
 
   it("without matching trigger", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: [],
       jobs: {},
     });
@@ -31,7 +31,7 @@ describe("Runner", () => {
   });
 
   it("with matching trigger", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
       jobs: {
         first: {
@@ -50,7 +50,7 @@ describe("Runner", () => {
   });
 
   it("with expression name", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
       jobs: {
         first: {
@@ -70,7 +70,7 @@ describe("Runner", () => {
   });
 
   it("runs multiple jobs in random order", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
       jobs: {
         first: {
@@ -98,7 +98,7 @@ describe("Runner", () => {
   });
 
   it("runs multiple jobs in specified order", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
       jobs: {
         second: {
@@ -135,7 +135,7 @@ describe("Runner", () => {
   });
 
   it("runs steps", () => {
-    const r = run([{ event: "push" }], ".github/workflows/lesson.yaml", {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
       jobs: {
         first: {

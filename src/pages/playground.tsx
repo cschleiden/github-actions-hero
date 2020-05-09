@@ -2,8 +2,8 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import * as React from "react";
 import { WorkflowExecution } from "../components/workflowExecution";
-import { parse } from "../lib/parser";
-import { run } from "../lib/runner";
+import { parse } from "../lib/parser/parser";
+import { run } from "../lib/runner/runner";
 import { Event, RuntimeModel } from "../lib/runtimeModel";
 import { Workflow } from "../lib/workflow";
 

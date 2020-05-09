@@ -1,6 +1,6 @@
-import GitHubPushContext from "../data/push-payload.json";
-import { evaluateExpression, replaceExpressions } from "./expressions";
-import { IExpressionContext } from "./expressions/evaluator";
+import GitHubPushContext from "../../data/push-payload.json";
+import { evaluateExpression, replaceExpressions } from "../expressions";
+import { IExpressionContext } from "../expressions/evaluator";
 import {
   Conclusion,
   Event,
@@ -8,8 +8,8 @@ import {
   RuntimeStep,
   State,
   StepType,
-} from "./runtimeModel";
-import { Job, JobMap, On, Step, Workflow } from "./workflow";
+} from "../runtimeModel";
+import { Job, JobMap, On, Step, Workflow } from "../workflow";
 
 export class RunError extends Error {}
 

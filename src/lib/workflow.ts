@@ -24,9 +24,10 @@ export interface UsesStep {
 export type Step = {
   id?: string;
 
+  /** Skips this step if evaluates to falsy */
   if?: Expression;
 
-  name?: string;
+  name?: string | Expression;
 
   with?: KeyValueMap;
 
@@ -38,7 +39,7 @@ export type Step = {
 } & (RunStep | UsesStep);
 
 export interface Job {
-  name?: string;
+  name?: string | Expression;
 
   needs?: string | string[];
 
@@ -48,10 +49,10 @@ export interface Job {
 
   env?: EnvMap;
 
+  // TODO
   defaults?: any;
 
-  // TODO: Expresion?
-  if?: string;
+  if?: Expression;
 
   steps: Step[];
 

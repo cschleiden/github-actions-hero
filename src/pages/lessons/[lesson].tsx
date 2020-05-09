@@ -9,8 +9,8 @@ import { WorkflowExecution } from "../../components/workflowExecution";
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
 import { ExpressionError } from "../../lib/expressions";
-import { parse, ParseError } from "../../lib/parser";
-import { run } from "../../lib/runner";
+import { parse, ParseError } from "../../lib/parser/parser";
+import { run } from "../../lib/runner/runner";
 import { Event, RuntimeModel } from "../../lib/runtimeModel";
 
 const DynamicEditor = dynamic(

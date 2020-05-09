@@ -1,3 +1,6 @@
+//
+// Events
+//
 export interface PushEvent {
   event: "push";
 
@@ -24,6 +27,9 @@ export interface ScheduleEvent {
 
 export type Event = PushEvent | PullRequestEvent | IssuesEvent | ScheduleEvent;
 
+//
+// Steps
+//
 export enum StepType {
   Uses,
   Docker,
@@ -50,8 +56,14 @@ export type RuntimeStep = (
   | RuntimeRunStep
   | RuntimeUsesStep
   | RuntimeDockerStep
-) & { skipped?: boolean };
+) & {
+  /** Was this step skipped or not */
+  skipped?: boolean;
+};
 
+//
+//
+//
 export enum State {
   Queued,
   Running,
@@ -81,12 +93,16 @@ export interface RuntimeJob {
 }
 
 export interface RuntimeModel {
+  /** Event that triggered this run */
   event: Event;
 
+  /** Overall name */
   name: string;
 
+  /** Executed jobs */
   jobs: RuntimeJob[];
 }
 
 // TODO: Set contexts etc.
+// TODO: REplace with expression context?
 export interface RuntimeEnv {}
