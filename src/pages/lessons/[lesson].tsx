@@ -95,7 +95,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
           minWidth: "45vw",
         }}
       >
-        <div className="flex justify-center p-3">
+        <div className="flex justify-center p-3 text-center">
           <h1>GitHub Actions Hero</h1>
         </div>
         {/* Header */}
