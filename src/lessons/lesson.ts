@@ -23,15 +23,10 @@ export interface Lesson {
   events: Event[];
 
   /**
-   * When is this lesson solved. By default it checks for `echo "Success!"`. If given a string, that string needs to be
-   * executed in a `run` step. Otherwise pass a custom evaluator.
+   * Checks when is this lesson solved. By default it checks for `echo "Success!"`. If given a string,
+   * that string needs to be "executed" in a `run` step. Otherwise pass a custom evaluator.
    */
   success?: string | ((r: RuntimeModel[]) => boolean);
-
-  /**
-   *
-   */
-  // runtimeModel: RuntimeModel;
 }
 
 export function lessonSolved(lesson: Lesson, r: RuntimeModel[]): boolean {
@@ -42,7 +37,7 @@ export function lessonSolved(lesson: Lesson, r: RuntimeModel[]): boolean {
     // Need to solve this for each trigger.
     return lesson.events.every((e) =>
       r
-        // Ignore any filters for now
+        // TODO: Ignore any filters for now
         .filter((x) => x.event.event === e.event)
         .every((x) =>
           x.jobs.some((job) =>
