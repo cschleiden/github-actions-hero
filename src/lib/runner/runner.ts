@@ -10,7 +10,7 @@ import {
 } from "../runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "../workflow";
 import { getBaseContext, mergeEnv } from "./context";
-import { filterBranches, filterPaths } from "./glob/glob";
+import { filterBranch, filterPaths } from "./glob/glob";
 
 export class RunError extends Error {}
 
@@ -200,23 +200,23 @@ export function _match(event: Event, on: On): boolean {
     // Branches
     if ("branches" in oe && "branch" in event) {
       // Workflow listens to specific branches
-      return filterBranches(oe.branches, event.branch);
+      return filterBranch(oe.branches, event.branch);
     }
 
     if ("branches-ignore" in oe && "branch" in event) {
       // Workflow listens to specific branches
-      return !filterBranches(oe["branches-ignore"], event.branch);
+      return !filterBranch(oe["branches-ignore"], event.branch);
     }
 
     // Paths
-    if ("paths" in oe && "branch" in event) {
-      // Workflow listens to specific branches
-      return filterPaths(oe.paths, event.branch);
+    if ("paths" in oe && "files" in event) {
+      // Workflow listens to specific files
+      return filterPaths(oe.paths, event.files || []);
     }
 
-    if ("paths-ignore" in oe && "branch" in event) {
-      // Workflow listens to specific branches
-      return !filterPaths(oe["paths-ignore"], event.branch);
+    if ("paths-ignore" in oe && "files" in event) {
+      // Workflow listens to specific files
+      return !filterPaths(oe["paths-ignore"], event.files || []);
     }
 
     // Activities

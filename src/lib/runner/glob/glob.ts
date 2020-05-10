@@ -11,10 +11,10 @@ export function match(glob: string, input: string): boolean {
   });
 }
 
-export function filterPaths(globs: string[], input: string): boolean {
-  return globs.every((g) => match(g, input));
+export function filterPaths(globs: string[], files: string[]): boolean {
+  return files.some((f) => globs.every((g) => match(g, f)));
 }
 
-export function filterBranches(globs: string[], input: string): boolean {
+export function filterBranch(globs: string[], input: string): boolean {
   return globs.every((g) => match(g, input));
 }

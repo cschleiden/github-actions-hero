@@ -202,6 +202,61 @@ describe("Runner", () => {
   });
 });
 
+describe("Paths filtering", () => {
+  it("with matching path", () => {
+    const r = run(
+      { event: "push", files: ["a.png", "b/c.png"] },
+      ".github/workflows/lesson.yaml",
+      {
+        on: {
+          push: {
+            paths: ["*"],
+          },
+        },
+        jobs: {
+          first: {
+            "runs-on": "ubuntu-latest",
+            steps: [
+              {
+                run: "echo 'Success'",
+              },
+            ],
+          },
+        },
+      }
+    );
+
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].name).toBe("first");
+  });
+
+  it("without matching path", () => {
+    const r = run(
+      { event: "push", files: ["b/c.png"] },
+      ".github/workflows/lesson.yaml",
+      {
+        on: {
+          push: {
+            paths: ["'*.png'"],
+          },
+        },
+        jobs: {
+          first: {
+            "runs-on": "ubuntu-latest",
+            steps: [
+              {
+                run: "echo 'Success'",
+              },
+            ],
+          },
+        },
+      }
+    );
+
+    expect(r.jobs.length).toBe(0);
+  });
+});
+
 describe("Branch filtering", () => {
   it("with matching branch", () => {
     const r = run(

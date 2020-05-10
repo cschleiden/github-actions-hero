@@ -83,21 +83,21 @@ describe("glob", () => {
     expect(
       filterPaths(
         ["'sub-project/**'", "'!sub-project/docs/**'"],
-        "sub-project/index.js"
+        ["sub-project/index.js"]
       )
     ).toBeTruthy();
 
     expect(
       filterPaths(
         ["'sub-project/**'", "'!sub-project/docs/**'"],
-        "sub-project/src/index.js"
+        ["sub-project/src/index.js"]
       )
     ).toBeTruthy();
 
     expect(
       filterPaths(
         ["'sub-project/**'", "'!sub-project/docs/**'"],
-        "sub-project/docs/readme.md"
+        ["sub-project/docs/readme.md"]
       )
     ).toBeFalsy();
   });

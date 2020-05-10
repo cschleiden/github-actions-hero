@@ -1,4 +1,5 @@
 import { filterByAction } from "./filterByAction";
+import { filterByPaths } from "./filterByPaths";
 import { filterPullRequestByBranch } from "./filterPullRequestByBranch";
 import { Lesson } from "./lesson";
 import { runForMultipleEvents } from "./runForMultipleEvents";
@@ -17,6 +18,7 @@ export const Lessons: Lesson[] = [
   runForMultipleEvents,
   filterPullRequestByBranch,
   filterByAction,
+  filterByPaths,
   runShellScript,
   useCheckoutAction,
   runsOnWindows,
