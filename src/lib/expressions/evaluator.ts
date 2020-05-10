@@ -129,7 +129,7 @@ class ExpressionEvaluator extends BaseCstVisitor {
       );
     }
 
-    return result;
+    return result || "";
   }
 
   contextMember(ctx: any, contextObject: any) {

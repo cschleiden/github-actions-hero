@@ -66,7 +66,18 @@ export function executeJob(
           name,
         },
         level,
-        jobCtx
+        {
+          ...jobCtx,
+          contexts: {
+            ...jobCtx.contexts,
+            matrix: {
+              ...idx.reduce((m, x) => {
+                m[x.key] = jobDef.strategy.matrix[x.key][x.idx];
+                return m;
+              }, {}),
+            },
+          },
+        }
       )
     );
 

@@ -4,7 +4,7 @@ import {
   RuntimeUsesStep,
   StepType,
 } from "../runtimeModel";
-import { Job } from "../workflow";
+import { Job, RunStep } from "../workflow";
 import { run } from "./runner";
 
 const defaultJob: Job = {
@@ -241,6 +241,31 @@ describe("Jobs", () => {
 
     expect(r.jobs.length).toBe(6);
   });
+
+  it("matrix", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: "push",
+      jobs: {
+        first: {
+          ...defaultJob,
+          strategy: {
+            matrix: {
+              foo: [1, 2, 3],
+              bar: ["hello", "world"],
+            },
+          },
+          steps: [
+            {
+              run: "echo ${{ matrix.foo }}",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(r.jobs.length).toBe(6);
+    expect((r.jobs[0].steps[0] as RunStep).run).toBe("echo 1");
+  });
 });
 
 describe("Paths filtering", () => {
@@ -403,5 +428,28 @@ describe("Steps", () => {
     expect(r.jobs[0].steps.length).toBe(2);
     expect(r.jobs[0].steps[0].name).toBe("Hello");
     expect(r.jobs[0].steps[1].name).toEqual("push");
+  });
+
+  it("run steps with expressions", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: "push",
+      env: {
+        FOO: "bar",
+        TEST: "baz",
+      },
+      jobs: {
+        first: {
+          "runs-on": "ubuntu-latest",
+          steps: [
+            {
+              run: "./run.sh ${{ env.FOO}} ${{ env.TEST }}",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(r.jobs[0].steps.length).toBe(1);
+    expect(r.jobs[0].steps[0].run).toBe("./run.sh bar baz");
   });
 });

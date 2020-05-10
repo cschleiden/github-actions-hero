@@ -2,6 +2,7 @@ import { filterByAction } from "./filterByAction";
 import { filterByPaths } from "./filterByPaths";
 import { filterPullRequestByBranch } from "./filterPullRequestByBranch";
 import { Lesson } from "./lesson";
+import { matrixJob } from "./matrixJob";
 import { runForMultipleEvents } from "./runForMultipleEvents";
 import { runOnPush } from "./runOnPush";
 import { runShellScript } from "./runShellScript";
@@ -26,4 +27,5 @@ export const Lessons: Lesson[] = [
   // runSchedule,
   skipJobIf,
   skipStepIf,
+  matrixJob,
 ];

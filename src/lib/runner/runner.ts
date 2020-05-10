@@ -129,7 +129,7 @@ export function _executeSteps(
     if ("run" in step) {
       runStep = {
         stepType: StepType.Run,
-        run: step.run,
+        run: _ev(step.run, jobCtx),
       };
     } else if ("uses" in step) {
       runStep = {
