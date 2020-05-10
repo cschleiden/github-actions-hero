@@ -1,10 +1,10 @@
 import { Flash } from "@primer/components";
 import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import * as React from "react";
 import { Badge } from "../components/badge";
+import { DynamicEditor } from "../components/dynamicEditor";
 import { WorkflowExecution } from "../components/workflowExecution/workflowExecution";
 import { ExpressionError } from "../lib/expressions";
 import { parse, ParseError } from "../lib/parser/parser";
@@ -60,14 +60,6 @@ jobs:
     needs: [lesson4-3]
     steps:
     - run: echo "Job 5"`;
-
-const DynamicEditor = dynamic(
-  () => import("../components/workflowEditor").then((x) => x.Editor),
-  {
-    loading: () => <p>Loading ...</p>,
-    ssr: false,
-  }
-);
 
 const PlaygroundPage: NextPage = () => {
   const [input, setInput] = React.useState(defaultWorkflow);

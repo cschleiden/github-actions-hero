@@ -1,12 +1,12 @@
 import { ButtonPrimary, Flash, Pagination } from "@primer/components";
 import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import Router from "next/router";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import { Badge } from "../../components/badge";
+import { DynamicEditor } from "../../components/dynamicEditor";
 import { WorkflowExecution } from "../../components/workflowExecution/workflowExecution";
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
@@ -14,14 +14,6 @@ import { ExpressionError } from "../../lib/expressions";
 import { parse, ParseError } from "../../lib/parser/parser";
 import { run } from "../../lib/runner/runner";
 import { Event, RuntimeModel } from "../../lib/runtimeModel";
-
-const DynamicEditor = dynamic(
-  () => import("../../components/workflowEditor").then((x) => x.Editor),
-  {
-    loading: () => <p>Loading ...</p>,
-    ssr: false,
-  }
-);
 
 function _run(
   events: Event[],
