@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Router from "next/router";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
+import { Badge } from "../../components/badge";
 import { WorkflowExecution } from "../../components/workflowExecution/workflowExecution";
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
@@ -89,6 +90,8 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
 
   return (
     <div className="flex flex-row">
+      <Badge />
+
       <div
         className="flex-1 flex flex-col p-6 h-screen overflow-auto"
         style={{

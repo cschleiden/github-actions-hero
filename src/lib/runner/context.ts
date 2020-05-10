@@ -1,3 +1,4 @@
+import { getEventPayload } from "../events/eventPayload";
 import { IExpressionContext } from "../expressions/evaluator";
 import { Event } from "../runtimeModel";
 import { EnvMap } from "../workflow";
@@ -23,6 +24,7 @@ export function getBaseContext(
         head_ref: "825e127fcace28992b3688a96f78fe4d55e1e145",
         base_ref: "",
         event_name: event.event,
+        event: getEventPayload(event.event),
       },
       env,
     },

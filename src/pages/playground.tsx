@@ -1,11 +1,14 @@
+import { Flash } from "@primer/components";
+import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import * as React from "react";
+import { Badge } from "../components/badge";
 import { WorkflowExecution } from "../components/workflowExecution/workflowExecution";
-import { parse } from "../lib/parser/parser";
+import { ExpressionError } from "../lib/expressions";
+import { parse, ParseError } from "../lib/parser/parser";
 import { run } from "../lib/runner/runner";
 import { Event, RuntimeModel } from "../lib/runtimeModel";
-import { Workflow } from "../lib/workflow";
 
 const defaultEvents: Event[] = [
   {
@@ -68,19 +71,12 @@ const DynamicEditor = dynamic(
 const PlaygroundPage: NextPage = () => {
   const [input, setInput] = React.useState(defaultWorkflow);
 
-  let parsedWorkflow: Workflow;
-
-  try {
-    parsedWorkflow = parse(input);
-  } catch (e) {
-    // TODO: Show in UI
-    console.log("Parsing error", e);
-  }
-
+  let err: Error | undefined;
   let workflowExecution: { [trigger: string]: RuntimeModel } = {};
 
-  // Run
   try {
+    const parsedWorkflow = parse(input);
+
     for (const event of defaultEvents) {
       const result = run(
         event,
@@ -90,14 +86,19 @@ const PlaygroundPage: NextPage = () => {
 
       workflowExecution[event.event] = result;
     }
+
+    err = undefined;
   } catch (e) {
-    console.log("Runtime error", e);
+    workflowExecution = {};
+    err = e;
   }
 
   return (
     <div className="flex flex-row">
+      <Badge />
+
       <div
-        className="flex flex-col p-4"
+        className="flex flex-col p-6 h-screen overflow-auto"
         style={{
           minWidth: "40vw",
         }}
@@ -114,10 +115,32 @@ const PlaygroundPage: NextPage = () => {
             everythingEditable={true}
           />
         </div>
+
+        {err && (
+          <div className="mt-2">
+            <Flash scheme="red">
+              {(() => {
+                switch (true) {
+                  case err instanceof YAMLException:
+                    return <div>Parsing error: {err.message}</div>;
+
+                  case err instanceof ParseError:
+                    return <div>Validation error: {err.message}</div>;
+
+                  case err instanceof ExpressionError:
+                    return <div>Expression error: {err.message}</div>;
+
+                  default:
+                    return <div>{err.message}</div>;
+                }
+              })()}
+            </Flash>
+          </div>
+        )}
       </div>
 
       <div
-        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen p-12 flex flex-row"
+        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen overflow-auto p-6 flex flex-row"
         style={{ minWidth: "60vw" }}
       >
         {defaultEvents.map((event, idx) => (
