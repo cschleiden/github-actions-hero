@@ -232,13 +232,14 @@ describe("Jobs", () => {
           strategy: {
             matrix: {
               foo: [1, 2, 3],
+              bar: ["hello", "world"],
             },
           },
         },
       },
     });
 
-    expect(r.jobs.length).toBe(3);
+    expect(r.jobs.length).toBe(6);
   });
 });
 

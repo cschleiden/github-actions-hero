@@ -72,16 +72,20 @@ export function executeJob(
 
     //
     let advanced = false;
-    for (const i of idx) {
+    for (let i = idx.length - 1; i >= 0; --i) {
+      const it = idx[i];
+
       if (
-        i.idx + 1 <
-        ((Array.isArray(jobDef.strategy.matrix[i.key])
-          ? jobDef.strategy.matrix[i.key]
-          : [jobDef.strategy.matrix[i.key]]) as any[]).length
+        it.idx + 1 <
+        ((Array.isArray(jobDef.strategy.matrix[it.key])
+          ? jobDef.strategy.matrix[it.key]
+          : [jobDef.strategy.matrix[it.key]]) as any[]).length
       ) {
-        ++i.idx;
+        ++it.idx;
         advanced = true;
         break;
+      } else {
+        it.idx = 0;
       }
     }
     if (!advanced) {
