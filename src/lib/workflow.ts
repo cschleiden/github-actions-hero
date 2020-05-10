@@ -94,8 +94,10 @@ export interface Job {
   services?: any;
 }
 
+export type MatrixValues = string | number | string[] | number[];
+
 export interface Strategy {
-  matrix: { [key: string]: string[] };
+  matrix: { [key: string]: MatrixValues };
 
   "fail-fast"?: boolean;
 

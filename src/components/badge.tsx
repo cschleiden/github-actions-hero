@@ -2,7 +2,7 @@ import * as React from "react";
 
 export const Badge: React.FC = () => {
   return (
-    <div className="absolute right-0 top-0">
+    <div className="absolute right-0 top-0 z-50">
       <a
         href="https://www.github.com/cschleiden/github-actions-hero"
         aria-label="View source on GitHub"

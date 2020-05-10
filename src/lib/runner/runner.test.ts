@@ -222,6 +222,24 @@ describe("Jobs", () => {
     expect(r.jobs.length).toBe(1);
     expect(r.jobs[0].conclusion).toBe(Conclusion.Success);
   });
+
+  it("matrix", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: "push",
+      jobs: {
+        first: {
+          ...defaultJob,
+          strategy: {
+            matrix: {
+              foo: [1, 2, 3],
+            },
+          },
+        },
+      },
+    });
+
+    expect(r.jobs.length).toBe(3);
+  });
 });
 
 describe("Paths filtering", () => {

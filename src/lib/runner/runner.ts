@@ -1,21 +1,15 @@
 import { evaluateExpression, replaceExpressions } from "../expressions";
 import { IExpressionContext } from "../expressions/evaluator";
-import {
-  Conclusion,
-  Event,
-  RuntimeModel,
-  RuntimeStep,
-  State,
-  StepType,
-} from "../runtimeModel";
+import { Event, RuntimeModel, RuntimeStep, StepType } from "../runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "../workflow";
 import { getBaseContext, mergeEnv } from "./context";
 import { filterBranch, filterPaths } from "./glob/glob";
+import { executeJob } from "./runJobs";
 
 export class RunError extends Error {}
 
 /** Evaluate a single `if` expression */
-function _evIf(
+export function _evIf(
   input: string | undefined,
   ctx: IExpressionContext
 ): boolean | undefined {
@@ -26,7 +20,8 @@ function _evIf(
   return !!evaluateExpression(input, ctx);
 }
 
-function _ev(
+/** Evaluate a generic expression */
+export function _ev(
   input: string | undefined,
   ctx: IExpressionContext
 ): string | undefined {
@@ -65,27 +60,7 @@ export function run(
     const jobDef = workflow.jobs[jobId];
     const jobCtx = mergeEnv(ctx, jobDef.env);
 
-    let conclusion = Conclusion.Success;
-
-    // Should we run this job?
-    if (!!jobDef.if) {
-      if (!_evIf(jobDef.if, jobCtx)) {
-        conclusion = Conclusion.Skipped;
-      }
-    }
-
-    result.jobs.push({
-      id: jobId,
-      runnerLabel: Array.isArray(jobDef["runs-on"])
-        ? jobDef["runs-on"]
-        : [jobDef["runs-on"]],
-      name: _ev(jobDef.name, jobCtx) || jobId,
-      steps: _executeSteps(jobDef.steps, jobCtx),
-      state: State.Done,
-      conclusion,
-      level,
-      dependsOn: Array.isArray(jobDef.needs) ? jobDef.needs : [jobDef.needs],
-    });
+    result.jobs.push(...executeJob(jobId, jobDef, level, jobCtx));
   }
 
   return result;

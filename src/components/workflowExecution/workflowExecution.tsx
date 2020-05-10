@@ -36,7 +36,7 @@ export const Job: React.FC<{
   return (
     <div
       key={job.id}
-      className={`border border-gray-500 rounded bg-white shadow relative mx-3 last:mr-0 ${
+      className={`border border-gray-500 rounded bg-white shadow relative my-3 mx-3 last:mr-0 ${
         job.conclusion == Conclusion.Skipped ? "opacity-50" : ""
       }`}
       style={{ width: "240px" }}
@@ -177,7 +177,7 @@ export const WorkflowExecution: React.FC<{
         </div>
         <div className="my-6">
           {jobGroups.map((jobGroup, groupIdx) => (
-            <div key={groupIdx} className="flex flex-row justify-center py-8">
+            <div key={groupIdx} className="flex flex-row flex-wrap py-8">
               {jobGroup.map((job) => (
                 <Job key={job.id} workflowVisId={id} job={job} />
               ))}
