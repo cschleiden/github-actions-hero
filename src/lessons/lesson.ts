@@ -7,12 +7,12 @@ export interface Lesson {
   title: string;
 
   /**
-   * Description of lesson
+   * Description of lesson, supports Markdown
    */
   description: string;
 
   /**
-   * Workflow file content. Use @ to mark editable lines. Only the first is important, use more than one to ensure
+   * Workflow file content. Use % to mark editable lines. Only the first one is important, use more than one to ensure
    * the editor includes the desired amount of whitespace.
    */
   workflow: string;

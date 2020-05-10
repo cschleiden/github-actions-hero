@@ -1,4 +1,3 @@
-import GitHubPushContext from "../../data/push-payload.json";
 import { evaluateExpression, replaceExpressions } from "../expressions";
 import { IExpressionContext } from "../expressions/evaluator";
 import {
@@ -10,13 +9,13 @@ import {
   StepType,
 } from "../runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "../workflow";
-import { mergeEnv } from "./context";
-import { filterBranches } from "./glob/glob";
+import { getBaseContext, mergeEnv } from "./context";
+import { filterBranches, filterPaths } from "./glob/glob";
 
 export class RunError extends Error {}
 
 /** Evaluate a single `if` expression */
-function evIf(
+function _evIf(
   input: string | undefined,
   ctx: IExpressionContext
 ): boolean | undefined {
@@ -43,14 +42,11 @@ export function run(
   workflowFilename: string,
   workflow: Workflow
 ): RuntimeModel {
-  const ctx: IExpressionContext = {
-    contexts: {
-      github: GitHubPushContext,
-      env: {
-        ...workflow.env,
-      },
-    },
-  };
+  const ctx: IExpressionContext = getBaseContext(
+    workflowFilename,
+    event,
+    workflow.env
+  );
 
   const result: RuntimeModel = {
     event,
@@ -73,13 +69,16 @@ export function run(
 
     // Should we run this job?
     if (!!jobDef.if) {
-      if (!evIf(jobDef.if, jobCtx)) {
+      if (!_evIf(jobDef.if, jobCtx)) {
         conclusion = Conclusion.Skipped;
       }
     }
 
     result.jobs.push({
       id: jobId,
+      runnerLabel: Array.isArray(jobDef["runs-on"])
+        ? jobDef["runs-on"]
+        : [jobDef["runs-on"]],
       name: _ev(jobDef.name, jobCtx) || jobId,
       steps: _executeSteps(jobDef.steps, jobCtx),
       state: State.Done,
@@ -168,8 +167,12 @@ export function _executeSteps(
       };
     }
 
+    if (!!step.name) {
+      runStep.name = _ev(step.name, stepCtx);
+    }
+
     if (!!step.if) {
-      runStep.skipped = !evIf(step.if, stepCtx);
+      runStep.skipped = !_evIf(step.if, stepCtx);
     }
 
     return runStep;
@@ -185,18 +188,43 @@ export function _match(event: Event, on: On): boolean {
     return on.some((e) => e === event.event);
   } else {
     // Map, check for other properties
-    if (!on[event.event]) {
+    if (on[event.event] === undefined) {
       return false;
     }
 
-    switch (event.event) {
-      case "push":
-      case "pull_request":
-        if (!!on[event.event]["branches"]) {
-          // TODO: Support glob filtering
-          const branches: string[] = on[event.event]["branches"];
-          return filterBranches(branches, event.branch);
-        }
+    if (on[event.event] === null) {
+      return true;
     }
+
+    const oe = on[event.event];
+    // Branches
+    if ("branches" in oe && "branch" in event) {
+      // Workflow listens to specific branches
+      return filterBranches(oe.branches, event.branch);
+    }
+
+    if ("branches-ignore" in oe && "branch" in event) {
+      // Workflow listens to specific branches
+      return !filterBranches(oe["branches-ignore"], event.branch);
+    }
+
+    // Paths
+    if ("paths" in oe && "branch" in event) {
+      // Workflow listens to specific branches
+      return filterPaths(oe.paths, event.branch);
+    }
+
+    if ("paths-ignore" in oe && "branch" in event) {
+      // Workflow listens to specific branches
+      return !filterPaths(oe["paths-ignore"], event.branch);
+    }
+
+    // Activities
+    if ("types" in oe && !!oe.types && "action" in event && !!event.action) {
+      // Workflow listens to specific actions
+      return oe.types.includes(event.action as any);
+    }
+
+    return true;
   }
 }

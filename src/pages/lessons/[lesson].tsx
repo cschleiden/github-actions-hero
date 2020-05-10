@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Router from "next/router";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
-import { WorkflowExecution } from "../../components/workflowExecution";
+import { WorkflowExecution } from "../../components/workflowExecution/workflowExecution";
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
 import { ExpressionError } from "../../lib/expressions";
@@ -64,7 +64,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
   >();
 
   React.useEffect(() => {
-    // Perform initial run
+    // Perform initial run when the lesson has changed to generate the execution graph
     const { workflowExecution } = _run(l.events, l.workflow.replace(/%/g, ""));
     setErr(undefined);
     setOutcome(undefined);
@@ -90,15 +90,14 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
   return (
     <div className="flex flex-row">
       <div
-        className="flex-1 flex flex-col p-4"
+        className="flex-1 flex flex-col p-6 h-screen overflow-auto"
         style={{
           minWidth: "45vw",
         }}
       >
-        <div className="flex justify-center p-3 text-center">
+        <div className="flex justify-center text-center">
           <h1>GitHub Actions Hero</h1>
         </div>
-        {/* Header */}
         <div className="flex items-center">
           <div className="flex-1 justify-start">
             <h2>Lesson {lesson}</h2>
@@ -109,7 +108,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
               pageCount={Lessons.length}
               currentPage={lesson}
               marginPageCount={1}
-              surroundingPageCount={2}
+              surroundingPageCount={1}
               onPageChange={(e, page) => {
                 Router.push(`/lessons/[lesson]`, `/lessons/${page}`);
                 e.preventDefault();
@@ -134,13 +133,20 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
                   Success! Now move on to the next one.
                 </div>
                 <div className="self-end">
-                  <ButtonPrimary
-                    onClick={() =>
-                      Router.push(`/lessons/[lesson]`, `/lessons/${lesson + 1}`)
-                    }
-                  >
-                    Next
-                  </ButtonPrimary>
+                  {lesson < Lessons.length ? (
+                    <ButtonPrimary
+                      onClick={() =>
+                        Router.push(
+                          `/lessons/[lesson]`,
+                          `/lessons/${lesson + 1}`
+                        )
+                      }
+                    >
+                      Next
+                    </ButtonPrimary>
+                  ) : (
+                    <div>You are done!</div>
+                  )}
                 </div>
               </div>
             </Flash>
@@ -164,7 +170,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen p-12 flex flex-row">
+      <div className="flex-1 bg-gray-300 h-screen overflow-auto p-6 flex flex-row flex-wrap">
         {workflowExecution &&
           l.events.map((event, idx) => (
             <WorkflowExecution

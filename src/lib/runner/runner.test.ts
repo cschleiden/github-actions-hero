@@ -59,6 +59,63 @@ describe("Runner", () => {
     expect(r.jobs[0].name).toBe("first");
   });
 
+  it("with matching trigger object notation", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: {
+        push: null,
+      },
+      jobs: {
+        first: {
+          "runs-on": "ubuntu-latest",
+          steps: [
+            {
+              run: "echo 'Success'",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].name).toBe("first");
+  });
+
+  it("without activity", () => {
+    const r = run(
+      { event: "issues", action: "labeled" },
+      ".github/workflows/lesson.yaml",
+      {
+        on: {
+          issues: {},
+        },
+        jobs: {
+          first: defaultJob,
+        },
+      }
+    );
+
+    expect(r.jobs.length).toBe(1);
+  });
+
+  it("without matching activity", () => {
+    const r = run(
+      { event: "issues", action: "labeled" },
+      ".github/workflows/lesson.yaml",
+      {
+        on: {
+          issues: {
+            types: ["edited"],
+          },
+        },
+        jobs: {
+          first: defaultJob,
+        },
+      }
+    );
+
+    expect(r.jobs.length).toBe(0);
+  });
+
   it("with expression name", () => {
     const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
@@ -143,35 +200,6 @@ describe("Runner", () => {
     expect(r.jobs.map((j) => j.name)).toEqual(["first", "second", "third"]);
     expect(r.jobs.map((j) => j.level)).toEqual([0, 1, 2]);
   });
-
-  it("runs steps", () => {
-    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
-      on: "push",
-      jobs: {
-        first: {
-          "runs-on": "ubuntu-latest",
-          steps: [
-            {
-              run: "echo 'Success'",
-            },
-            {
-              uses: "actions/checkout@v2",
-            },
-          ],
-        },
-      },
-    });
-
-    expect(r.jobs[0].steps.length).toBe(2);
-    expect(r.jobs[0].steps[0]).toEqual<RuntimeRunStep>({
-      stepType: StepType.Run,
-      run: "echo 'Success'",
-    });
-    expect(r.jobs[0].steps[1]).toEqual<RuntimeUsesStep>({
-      stepType: StepType.Uses,
-      uses: "actions/checkout@v2",
-    });
-  });
 });
 
 describe("Branch filtering", () => {
@@ -223,5 +251,61 @@ describe("Environment variables", () => {
     });
 
     expect(r.jobs[0].name).toBe("Bar job-bar");
+  });
+});
+
+describe("steps", () => {
+  it("runs steps", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: "push",
+      jobs: {
+        first: {
+          "runs-on": "ubuntu-latest",
+          steps: [
+            {
+              run: "echo 'Success'",
+            },
+            {
+              uses: "actions/checkout@v2",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(r.jobs[0].steps.length).toBe(2);
+    expect(r.jobs[0].steps[0]).toEqual<RuntimeRunStep>({
+      stepType: StepType.Run,
+      run: "echo 'Success'",
+    });
+    expect(r.jobs[0].steps[1]).toEqual<RuntimeUsesStep>({
+      stepType: StepType.Uses,
+      uses: "actions/checkout@v2",
+    });
+  });
+
+  it("named steps", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: "push",
+      jobs: {
+        first: {
+          "runs-on": "ubuntu-latest",
+          steps: [
+            {
+              name: "Hello",
+              run: "echo 'Success'",
+            },
+            {
+              name: "${{ github.event_name }}",
+              uses: "actions/checkout@v2",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(r.jobs[0].steps.length).toBe(2);
+    expect(r.jobs[0].steps[0].name).toBe("Hello");
+    expect(r.jobs[0].steps[1].name).toEqual("push");
   });
 });

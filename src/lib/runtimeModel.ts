@@ -1,23 +1,23 @@
+import { IssueActivities, PullRequestActivities } from "./events/activities";
+
 //
 // Events
 //
-export interface PushEvent {
-  event: "push";
-
+export type Branch = {
   branch?: string;
-}
+};
 
-export interface PullRequestEvent {
-  event: "pull_request";
+export type Files = {
+  files?: string[];
+};
 
-  branch?: string;
-}
+export type OnEvent<TEvent extends string> = {
+  event: TEvent;
+};
 
-export interface IssuesEvent {
-  event: "issues";
-
-  action?: "created" | "updated" | "removed";
-}
+export type Action<TActivities> = {
+  action?: TActivities;
+};
 
 export interface ScheduleEvent {
   event: "schedule";
@@ -25,7 +25,11 @@ export interface ScheduleEvent {
   cron: string;
 }
 
-export type Event = PushEvent | PullRequestEvent | IssuesEvent | ScheduleEvent;
+export type Event =
+  | (OnEvent<"push"> & Branch & Files)
+  | (OnEvent<"pull_request"> & Branch & Files & Action<PullRequestActivities>)
+  | (OnEvent<"issues"> & Action<IssueActivities>);
+// | ScheduleEvent;
 
 //
 // Steps
@@ -37,6 +41,8 @@ export enum StepType {
 }
 
 export interface RuntimeRunStep {
+  name?: string;
+
   stepType: StepType.Run;
 
   run: string;
@@ -57,6 +63,9 @@ export type RuntimeStep = (
   | RuntimeUsesStep
   | RuntimeDockerStep
 ) & {
+  /** Custom name */
+  name?: string;
+
   /** Was this step skipped or not */
   skipped?: boolean;
 };
@@ -79,6 +88,9 @@ export enum Conclusion {
 export interface RuntimeJob {
   id: string;
   name: string;
+
+  /** Labels of the runners who ran the workflow */
+  runnerLabel: string[];
 
   steps: RuntimeStep[];
 

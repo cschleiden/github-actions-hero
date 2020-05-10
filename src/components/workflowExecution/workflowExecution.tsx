@@ -1,5 +1,5 @@
-import { BranchName, StyledOcticon } from "@primer/components";
-import Octicon, { Check, GitBranch, Icon, Skip } from "@primer/octicons-react";
+import { StyledOcticon } from "@primer/components";
+import { Check, Icon, Skip } from "@primer/octicons-react";
 import dynamic from "next/dynamic";
 import * as React from "react";
 import {
@@ -7,25 +7,17 @@ import {
   Event,
   RuntimeJob,
   RuntimeModel,
-  RuntimeStep,
-  StepType,
-} from "../lib/runtimeModel";
+} from "../../lib/runtimeModel";
+import { WorkflowEvent } from "./event";
+import { Step } from "./step";
+import { makeSafeForCSS } from "./utils";
 
 const DynamicConnections = dynamic<any>(
-  () => import("../external/react-connect-elements/index"),
+  () => import("../../external/react-connect-elements/index"),
   {
     ssr: false,
   }
 );
-
-function makeSafeForCSS(name: string): string {
-  return name.replace(/[^a-z0-9]/g, function (s) {
-    var c = s.charCodeAt(0);
-    if (c == 32) return "-";
-    if (c >= 65 && c <= 90) return "_" + s.toLowerCase();
-    return "__" + ("000" + c.toString(16)).slice(-4);
-  });
-}
 
 function conclusionToIcon(conclusion: Conclusion): Icon {
   switch (conclusion) {
@@ -44,7 +36,7 @@ export const Job: React.FC<{
   return (
     <div
       key={job.id}
-      className={`border border-gray-500 rounded bg-white shadow relative mr-12 ${
+      className={`border border-gray-500 rounded bg-white shadow relative mx-3 last:mr-0 ${
         job.conclusion == Conclusion.Skipped ? "opacity-50" : ""
       }`}
       style={{ width: "240px" }}
@@ -110,31 +102,6 @@ export const Job: React.FC<{
   );
 };
 
-export const Step: React.FC<{
-  step: RuntimeStep;
-}> = ({ step }) => {
-  let content: JSX.Element = null;
-
-  switch (step.stepType) {
-    case StepType.Run:
-      content = <code>$ {step.run}</code>;
-      break;
-
-    case StepType.Uses:
-      <>
-        Run: <code>{step.uses}</code>
-      </>;
-      break;
-  }
-
-  return (
-    <div className={`p-1 text-sm ${step.skipped ? "opacity-50" : ""}`}>
-      {step.skipped ? <StyledOcticon icon={Skip} /> : null}
-      {content}
-    </div>
-  );
-};
-
 /**
  * Group jobs according to their level (distance from the root in the dependency graph)
  * @param jobs List of jobs
@@ -164,6 +131,7 @@ export const WorkflowExecution: React.FC<{
   const [connections, setConnections] = React.useState<[string, string][]>([]);
   const jobGroups = groupJobs(executionModel?.jobs || []);
 
+  // Render connections once the current model has been rendered since it needs to read the element positions
   React.useEffect(() => {
     let c: [string, string][] = [];
 
@@ -194,53 +162,17 @@ export const WorkflowExecution: React.FC<{
   return (
     <>
       <div className={`bg-gray-300 p-3 workflow-${id} relative`}>
+        {connections && connections.length > 0 && (
+          <DynamicConnections
+            selector={`.workflow-${id}`}
+            elements={connections.map((c) => ({ from: c[0], to: c[1] }))}
+            strokeWidth={2}
+          />
+        )}
         <div className="events py-2 flex justify-center">
           {/* Events for workflow */}
           {events.map((e) => (
-            <div
-              key={e.event}
-              className="border border-gray-500 rounded bg-gray-500 shadow relative p-3 mr-12 text-center"
-              style={{ width: "240px" }}
-            >
-              <div className="font-bold">{e.event}</div>
-              {(() => {
-                switch (e.event) {
-                  case "push":
-                  case "pull_request":
-                    return (
-                      (!!e.branch && (
-                        <div>
-                          <Octicon icon={GitBranch} className="mr-1" />
-                          <BranchName>{e.branch}</BranchName>
-                        </div>
-                      )) ||
-                      null
-                    );
-                }
-              })()}
-
-              <div
-                className="absolute rounded-b-full shadow bg-gray-500 border border-gray-500 border-t-0"
-                style={{
-                  width: "20px",
-                  height: "10px",
-                  bottom: "-9.5px",
-                  right: "20px",
-                }}
-              >
-                <div
-                  className={`absolute bg-gray-200 rounded-full c-${id}-${makeSafeForCSS(
-                    e.event
-                  )}`}
-                  style={{
-                    bottom: "4px",
-                    left: "4px",
-                    width: "10px",
-                    height: "10px",
-                  }}
-                />
-              </div>
-            </div>
+            <WorkflowEvent key={e.event} id={id} event={e} />
           ))}
         </div>
         <div className="my-6">
@@ -252,13 +184,6 @@ export const WorkflowExecution: React.FC<{
             </div>
           ))}
         </div>
-        {connections && connections.length > 0 && (
-          <DynamicConnections
-            selector={`.workflow-${id}`}
-            elements={connections.map((c) => ({ from: c[0], to: c[1] }))}
-            strokeWidth={2}
-          />
-        )}
       </div>
     </>
   );

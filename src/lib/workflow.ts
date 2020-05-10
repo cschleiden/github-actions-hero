@@ -1,8 +1,10 @@
+import { IssueActivities, PullRequestActivities } from "./events/activities";
+
 /** Generic map */
 export type KeyValueMap = { [key: string]: string | number | boolean };
 
-export interface OnTypes<T extends string[]> {
-  types?: T;
+export interface OnTypes<T extends string> {
+  types?: T[];
 }
 
 export interface OnBranches {
@@ -22,27 +24,11 @@ export type On =
   | string
   | string[]
   | {
-      push?: OnBranches & OnPaths;
-      pull_request?: OnBranches &
-        OnTypes<
-          [
-            "assigned",
-            "unassigned",
-            "labeled",
-            "unlabeled",
-            "opened",
-            "edited",
-            "closed",
-            "reopened",
-            "synchronize",
-            "ready_for_review",
-            "locked",
-            "unlocked",
-            "review_requested",
-            "review_request_removed"
-          ]
-        > &
-        OnPaths;
+      issues?: null | OnTypes<IssueActivities>;
+      push?: null | (OnBranches & OnPaths);
+      pull_request?:
+        | null
+        | (OnBranches & OnTypes<PullRequestActivities> & OnPaths);
     };
 
 export interface RunStep {
@@ -65,6 +51,7 @@ export type Step = {
   /** Skips this step if evaluates to falsy */
   if?: Expression;
 
+  /** Optional custom name for a step */
   name?: string | Expression;
 
   with?: KeyValueMap;

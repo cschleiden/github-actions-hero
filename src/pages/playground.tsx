@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import * as React from "react";
-import { WorkflowExecution } from "../components/workflowExecution";
+import { WorkflowExecution } from "../components/workflowExecution/workflowExecution";
 import { parse } from "../lib/parser/parser";
 import { run } from "../lib/runner/runner";
 import { Event, RuntimeModel } from "../lib/runtimeModel";
@@ -17,6 +17,9 @@ const defaultEvents: Event[] = [
 const defaultWorkflow = `name: Playground
 
 on: [push]
+
+env:
+  TEST: Okay
 
 jobs:
   lesson4-1:
@@ -38,12 +41,14 @@ jobs:
     - run: echo "Job 3"
     - run: echo "Job 3"
     - run: echo "Job 3"
+      name: Step \${{ env.TEST }}
   lesson4-4:
     name: \${{ github.event_name }}-\${{ github.event.ref }}
     runs-on: ubuntu-latest
     needs: [lesson4-3]
     steps:
-    - run: echo "Job 4"
+    - name: 'Custom name'
+      run: echo "Job 4"
   lesson4-5:
     name: Skipped jobx
     if: github.event_name == 'test'

@@ -29,6 +29,23 @@ jobs:
     expect(wf.on).toEqual(["push", "pull_request"]);
   });
 
+  it("with on object", () => {
+    const wf = parse(
+      `name: test
+on:
+  push:
+  pull_request:
+jobs:
+  first:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo 1`
+    );
+
+    expect(wf.name).toBe("test");
+    expect(wf.on).toEqual({ push: null, pull_request: null });
+  });
+
   it("with if expression", () => {
     const wf = parse(
       `name: test

@@ -1,9 +1,10 @@
+import { filterByAction } from "./filterByAction";
 import { filterPullRequestByBranch } from "./filterPullRequestByBranch";
 import { Lesson } from "./lesson";
 import { runForMultipleEvents } from "./runForMultipleEvents";
 import { runOnPush } from "./runOnPush";
-import { runSchedule } from "./runSchedule";
 import { runShellScript } from "./runShellScript";
+import { runsOnWindows } from "./runsOnWindows";
 import { skipStepIf } from "./skipStepIf";
 import { useCheckoutAction } from "./useCheckoutAction";
 
@@ -15,8 +16,10 @@ export const Lessons: Lesson[] = [
   runOnPush,
   runForMultipleEvents,
   filterPullRequestByBranch,
+  filterByAction,
   runShellScript,
   useCheckoutAction,
-  runSchedule,
+  runsOnWindows,
+  // runSchedule,
   skipStepIf,
 ];
