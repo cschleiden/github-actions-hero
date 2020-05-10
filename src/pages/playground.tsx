@@ -2,6 +2,7 @@ import { Flash } from "@primer/components";
 import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import * as React from "react";
 import { Badge } from "../components/badge";
 import { WorkflowExecution } from "../components/workflowExecution/workflowExecution";
@@ -104,7 +105,11 @@ const PlaygroundPage: NextPage = () => {
         }}
       >
         <div className="text-center p-3">
-          <h1 className="m-0">GitHub Actions Hero</h1>
+          <Link href="/">
+            <a>
+              <h1>GitHub Actions Hero</h1>
+            </a>
+          </Link>
           <h2>Playground</h2>
         </div>
 

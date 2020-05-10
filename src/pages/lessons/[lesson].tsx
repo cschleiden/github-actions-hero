@@ -2,6 +2,7 @@ import { ButtonPrimary, Flash, Pagination } from "@primer/components";
 import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import Router from "next/router";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
@@ -99,7 +100,11 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         }}
       >
         <div className="flex justify-center text-center">
-          <h1>GitHub Actions Hero</h1>
+          <Link href="/">
+            <a>
+              <h1>GitHub Actions Hero</h1>
+            </a>
+          </Link>
         </div>
         <div className="flex items-center">
           <div className="flex-1 justify-start">
