@@ -6,6 +6,7 @@ import { runForMultipleEvents } from "./runForMultipleEvents";
 import { runOnPush } from "./runOnPush";
 import { runShellScript } from "./runShellScript";
 import { runsOnWindows } from "./runsOnWindows";
+import { skipJobIf } from "./skipJobIf";
 import { skipStepIf } from "./skipStepIf";
 import { useCheckoutAction } from "./useCheckoutAction";
 
@@ -23,5 +24,6 @@ export const Lessons: Lesson[] = [
   useCheckoutAction,
   runsOnWindows,
   // runSchedule,
+  skipJobIf,
   skipStepIf,
 ];

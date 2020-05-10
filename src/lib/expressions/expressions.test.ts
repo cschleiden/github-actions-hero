@@ -44,10 +44,6 @@ describe("expression parser", () => {
   });
 
   describe("operators", () => {
-    /*
-    !	Not
-    */
-
     it("!", () => {
       // Booleans
       expect(ev("!true")).toBe(false);
@@ -149,11 +145,11 @@ describe("expression parser", () => {
 
   describe("functions", () => {
     describe("contains", () => {
-      it("array", () => {
+      it("in array", () => {
         expect(ev("contains([2, 1], 1)")).toBe(true);
       });
 
-      it("string", () => {
+      it("in string", () => {
         expect(ev("contains('hay', 'h')")).toBe(true);
         expect(ev("contains('tay', 'h')")).toBe(false);
       });

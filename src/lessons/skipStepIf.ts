@@ -2,9 +2,9 @@ import { StepType } from "../lib/runtimeModel";
 import { Lesson } from "./lesson";
 
 export const skipStepIf: Lesson = {
-  title: `Skip steps`,
+  title: `Skip Step`,
 
-  description: `Sometimes you want to skip certain steps. Use an [\`if\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsif) expression to run \`build.sh\` only when the current ref is \`refs/heads/master\`.`,
+  description: `Sometimes you also want to skip certain steps. Use an [\`if\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsif) expression to run \`build.sh\` only when the current ref is \`refs/heads/master\`.`,
 
   workflow: `name: Skip Step
 

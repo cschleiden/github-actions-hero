@@ -1,4 +1,9 @@
-import { RuntimeRunStep, RuntimeUsesStep, StepType } from "../runtimeModel";
+import {
+  Conclusion,
+  RuntimeRunStep,
+  RuntimeUsesStep,
+  StepType,
+} from "../runtimeModel";
 import { Job } from "../workflow";
 import { run } from "./runner";
 
@@ -202,6 +207,23 @@ describe("Runner", () => {
   });
 });
 
+describe("Jobs", () => {
+  it("if", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: "push",
+      jobs: {
+        first: {
+          ...defaultJob,
+          if: "true",
+        },
+      },
+    });
+
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].conclusion).toBe(Conclusion.Success);
+  });
+});
+
 describe("Paths filtering", () => {
   it("with matching path", () => {
     const r = run(
@@ -309,7 +331,7 @@ describe("Environment variables", () => {
   });
 });
 
-describe("steps", () => {
+describe("Steps", () => {
   it("runs steps", () => {
     const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
