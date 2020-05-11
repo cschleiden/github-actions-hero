@@ -170,7 +170,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen overflow-auto p-6 flex flex-row flex-wrap">
+      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row flex-wrap">
         {workflowExecution &&
           l.events.map((event, idx) => (
             <WorkflowExecution

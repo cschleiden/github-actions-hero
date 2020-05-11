@@ -2,6 +2,7 @@ import { IExpressionContext } from "../expressions/evaluator";
 import { Conclusion, RuntimeJob, State } from "../runtimeModel";
 import { Job } from "../workflow";
 import { _ev, _evIf, _executeSteps } from "./runner";
+import { arr } from "./shared";
 
 function _executeJob(
   jobId: string,
@@ -20,9 +21,7 @@ function _executeJob(
 
   return {
     id: jobId,
-    runnerLabel: Array.isArray(jobDef["runs-on"])
-      ? jobDef["runs-on"]
-      : [jobDef["runs-on"]],
+    runnerLabel: arr(jobDef["runs-on"]).map((x) => _ev(x, jobCtx)),
     name: _ev(jobDef.name, jobCtx) || jobId,
     steps: _executeSteps(jobDef.steps, jobCtx),
     state: State.Done,
@@ -55,8 +54,6 @@ export function executeJob(
     const name = `${_ev(jobDef.name, jobCtx) || jobId} (${idx
       .map((x) => jobDef.strategy.matrix[x.key][x.idx])
       .join(", ")})`;
-
-    // TODO: Add ctx
 
     jobs.push(
       _executeJob(

@@ -22,6 +22,10 @@ h3 {
   @apply font-bold;
 }
 
+a {
+  @apply text-blue-600;
+}
+
 .CodeMirror {
     height: auto !important;
 }

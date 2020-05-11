@@ -242,7 +242,7 @@ describe("Jobs", () => {
     expect(r.jobs.length).toBe(6);
   });
 
-  it("matrix", () => {
+  it("matrix expression", () => {
     const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
       on: "push",
       jobs: {
@@ -265,6 +265,32 @@ describe("Jobs", () => {
 
     expect(r.jobs.length).toBe(6);
     expect((r.jobs[0].steps[0] as RunStep).run).toBe("echo 1");
+  });
+
+  it("matrix runs-on expression", () => {
+    const r = run({ event: "push" }, ".github/workflows/lesson.yaml", {
+      on: "push",
+      jobs: {
+        first: {
+          ...defaultJob,
+          strategy: {
+            matrix: {
+              os: ["ubuntu-latest", "windows-latest"],
+            },
+          },
+          "runs-on": "${{ matrix.os }}",
+          steps: [
+            {
+              run: "echo ${{ matrix.foo }}",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(r.jobs.length).toBe(2);
+    expect(r.jobs[0].runnerLabel).toEqual(["ubuntu-latest"]);
+    expect(r.jobs[1].runnerLabel).toEqual(["windows-latest"]);
   });
 });
 

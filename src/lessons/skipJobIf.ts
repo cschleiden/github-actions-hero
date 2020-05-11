@@ -6,7 +6,9 @@ export const skipJobIf: Lesson = {
 
   description: `Sometimes you want to run jobs only when certain conditions are met. You can use an [\`if\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idif) expression to skip and not run jobs.
 
-Update this workflow to only \`deploy\` when a change is pushed to the \`production\` branch.`,
+Update this workflow to only deploy when a change is pushed to the \`production\` branch.
+
+_Hint_: the ref is available in the [\`github\`](https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#github-context) context.`,
 
   workflow: `name: Skip job
 

@@ -1,4 +1,4 @@
-import { Flash } from "@primer/components";
+import { Button, Flash, SelectMenu } from "@primer/components";
 import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { ExpressionError } from "../lib/expressions";
 import { parse, ParseError } from "../lib/parser/parser";
 import { run } from "../lib/runner/runner";
 import { Event, RuntimeModel } from "../lib/runtimeModel";
+import { PlaygroundWorkflows } from "../playground/workflows";
 
 const defaultEvents: Event[] = [
   {
@@ -18,51 +19,11 @@ const defaultEvents: Event[] = [
   },
 ];
 
-const defaultWorkflow = `name: Playground
-
-on: [push]
-
-env:
-  TEST: Okay
-
-jobs:
-  lesson4-1:
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "Job 1"
-  lesson4-2:
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "Job 2"
-    - run: echo "Optional step"
-      if: \${{ 1 == 2 }}
-    - run: echo "Job 2"
-  lesson4-3:
-    runs-on: ubuntu-latest
-    needs: [lesson4-2]
-    steps:
-    - uses: actions/checkout@v2
-    - run: echo "Job 3"
-    - run: echo "Job 3"
-    - run: echo "Job 3"
-      name: Step \${{ env.TEST }}
-  lesson4-4:
-    name: \${{ github.event_name }}-\${{ github.event.ref }}
-    runs-on: ubuntu-latest
-    needs: [lesson4-3]
-    steps:
-    - name: 'Custom name'
-      run: echo "Job 4"
-  lesson4-5:
-    name: Skipped jobx
-    if: github.event_name == 'test'
-    runs-on: ubuntu-latest
-    needs: [lesson4-3]
-    steps:
-    - run: echo "Job 5"`;
-
 const PlaygroundPage: NextPage = () => {
-  const [input, setInput] = React.useState(defaultWorkflow);
+  const [selectedWorkflow, setSelectedWorkflow] = React.useState(
+    PlaygroundWorkflows[0]
+  );
+  const [input, setInput] = React.useState(selectedWorkflow.workflow);
 
   let err: Error | undefined;
   let workflowExecution: { [trigger: string]: RuntimeModel } = {};
@@ -91,23 +52,49 @@ const PlaygroundPage: NextPage = () => {
       <Badge />
 
       <div
-        className="flex flex-col p-6 h-screen overflow-auto"
+        className="flex-1 flex flex-col p-6 h-screen overflow-auto"
         style={{
-          minWidth: "40vw",
+          minWidth: "45vw",
         }}
       >
-        <div className="text-center p-3">
+        <div className="flex justify-center text-center">
           <Link href="/">
             <a>
               <h1>GitHub Actions Hero</h1>
             </a>
           </Link>
-          <h2>Playground</h2>
+        </div>
+        <div className="flex items-center my-3">
+          <div className="flex-1 justify-start">
+            <h2>Playground</h2>
+          </div>
+          <div className="flex flex-initial justify-end">
+            <SelectMenu>
+              <Button as="summary">Workflow: {selectedWorkflow.name}</Button>
+              <SelectMenu.Modal>
+                <SelectMenu.Header>Example workflows</SelectMenu.Header>
+                <SelectMenu.List>
+                  {PlaygroundWorkflows.map((pw) => (
+                    <SelectMenu.Item
+                      selected={pw === selectedWorkflow}
+                      onClick={(ev) => {
+                        setSelectedWorkflow(pw);
+                        setInput(pw.workflow);
+                        ev.preventDefault();
+                      }}
+                    >
+                      {pw.name}
+                    </SelectMenu.Item>
+                  ))}
+                </SelectMenu.List>
+              </SelectMenu.Modal>
+            </SelectMenu>
+          </div>
         </div>
 
         <div className="flex flex-col flex-1">
           <DynamicEditor
-            workflow={defaultWorkflow}
+            workflow={input}
             change={(v) => setInput(v)}
             everythingEditable={true}
           />
@@ -137,7 +124,7 @@ const PlaygroundPage: NextPage = () => {
       </div>
 
       <div
-        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen overflow-auto p-6 flex flex-row"
+        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen overflow-auto flex flex-row items-center"
         style={{ minWidth: "60vw" }}
       >
         {defaultEvents.map((event, idx) => (

@@ -36,7 +36,7 @@ export const Job: React.FC<{
   return (
     <div
       key={job.id}
-      className={`border border-gray-500 rounded bg-white shadow relative my-3 mx-3 last:mr-0 ${
+      className={`flex-0 border border-gray-500 rounded bg-white shadow relative my-3 mx-3 last:mr-0 ${
         job.conclusion == Conclusion.Skipped ? "opacity-50" : ""
       }`}
       style={{ width: "240px" }}
