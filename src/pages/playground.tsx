@@ -76,6 +76,7 @@ const PlaygroundPage: NextPage = () => {
                 <SelectMenu.List>
                   {PlaygroundWorkflows.map((pw) => (
                     <SelectMenu.Item
+                      key={pw.name}
                       selected={pw === selectedWorkflow}
                       onClick={(ev) => {
                         setSelectedWorkflow(pw);
