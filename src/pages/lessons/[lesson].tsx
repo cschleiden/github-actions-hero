@@ -5,7 +5,6 @@ import Link from "next/link";
 import Router from "next/router";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
-import { Badge } from "../../components/badge";
 import { DynamicEditor } from "../../components/dynamicEditor";
 import { WorkflowExecution } from "../../components/workflowExecution/workflowExecution";
 import { Lessons } from "../../lessons";
@@ -83,8 +82,6 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
 
   return (
     <div className="flex flex-row">
-      <Badge />
-
       <div
         className="flex-1 flex flex-col p-6 h-screen overflow-auto"
         style={{
@@ -170,7 +167,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row flex-wrap">
+      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center">
         {workflowExecution &&
           l.events.map((event, idx) => (
             <WorkflowExecution

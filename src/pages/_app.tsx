@@ -2,6 +2,7 @@ import Router from "next/router";
 import { useEffect } from "react";
 import "../../styles/main.css";
 import { initGA, logPageView } from "../analytics";
+import { Layout } from "../components/layout";
 
 export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -10,5 +11,9 @@ export default function MyApp({ Component, pageProps }) {
     Router.events.on("routeChangeComplete", logPageView);
   }, []);
 
-  return <Component {...pageProps} />;
+  return (
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
+  );
 }

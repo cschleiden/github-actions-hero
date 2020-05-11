@@ -3,7 +3,6 @@ import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
 import Link from "next/link";
 import * as React from "react";
-import { Badge } from "../components/badge";
 import { DynamicEditor } from "../components/dynamicEditor";
 import { WorkflowExecution } from "../components/workflowExecution/workflowExecution";
 import { ExpressionError } from "../lib/expressions";
@@ -48,9 +47,7 @@ const PlaygroundPage: NextPage = () => {
   }
 
   return (
-    <div className="flex flex-row">
-      <Badge />
-
+    <div className="flex flex-row h-screen">
       <div
         className="flex-1 flex flex-col p-6 h-screen overflow-auto"
         style={{
@@ -81,7 +78,6 @@ const PlaygroundPage: NextPage = () => {
                       onClick={(ev) => {
                         setSelectedWorkflow(pw);
                         setInput(pw.workflow);
-                        ev.preventDefault();
                       }}
                     >
                       {pw.name}
@@ -124,10 +120,7 @@ const PlaygroundPage: NextPage = () => {
         )}
       </div>
 
-      <div
-        className="flex-1 bg-gray-300 rounded-md rounded-l-none h-screen overflow-auto flex flex-row items-center"
-        style={{ minWidth: "60vw" }}
-      >
+      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center">
         {defaultEvents.map((event, idx) => (
           <WorkflowExecution
             key={event.event}

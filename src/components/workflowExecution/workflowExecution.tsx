@@ -169,7 +169,7 @@ export const WorkflowExecution: React.FC<{
             strokeWidth={2}
           />
         )}
-        <div className="events py-2 flex justify-center">
+        <div className="events pb-2 flex justify-center">
           {/* Events for workflow */}
           {events.map((e) => (
             <WorkflowEvent key={e.event} id={id} event={e} />
