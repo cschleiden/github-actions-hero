@@ -120,7 +120,7 @@ const PlaygroundPage: NextPage = () => {
         )}
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center">
+      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center flex-wrap">
         {defaultEvents.map((event, idx) => (
           <WorkflowExecution
             key={event.event}
