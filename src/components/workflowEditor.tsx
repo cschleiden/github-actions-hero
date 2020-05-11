@@ -88,11 +88,13 @@ export const Editor: React.FC<{
             theme: "monokai",
             lineNumbers: true,
             scrollbarStyle: null,
+            coverGutterNextToScrollbar: true,
             viewportMargin: Infinity,
             readOnly: !r.editable,
             firstLineNumber: r.start + 1,
             indentWithTabs: false,
             smartIndent: true,
+            tabSize: 2,
           }}
           onChange={(editor, data, value) => {
             const v = ranges.map((r) => r.text);
