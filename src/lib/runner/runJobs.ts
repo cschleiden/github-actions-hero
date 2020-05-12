@@ -38,6 +38,7 @@ export function executeJob(
   jobCtx: IExpressionContext
 ): RuntimeJob[] {
   if (!jobDef.strategy?.matrix) {
+    // Simple job
     return [_executeJob(jobId, jobDef, level, jobCtx)];
   }
 
@@ -55,30 +56,32 @@ export function executeJob(
       .map((x) => jobDef.strategy.matrix[x.key][x.idx])
       .join(", ")})`;
 
-    jobs.push(
-      _executeJob(
-        `${jobId}-${name}`,
-        {
-          ...jobDef,
-          name,
-        },
-        level,
-        {
-          ...jobCtx,
-          contexts: {
-            ...jobCtx.contexts,
-            matrix: {
-              ...idx.reduce((m, x) => {
-                m[x.key] = jobDef.strategy.matrix[x.key][x.idx];
-                return m;
-              }, {}),
-            },
+    const job = _executeJob(
+      `${jobId}-${name}`,
+      {
+        ...jobDef,
+        name,
+      },
+      level,
+      {
+        ...jobCtx,
+        contexts: {
+          ...jobCtx.contexts,
+          matrix: {
+            ...idx.reduce((m, x) => {
+              m[x.key] = jobDef.strategy.matrix[x.key][x.idx];
+              return m;
+            }, {}),
           },
-        }
-      )
+        },
+      }
     );
 
-    //
+    job.matrix = jobId;
+
+    jobs.push(job);
+
+    // Iterate over matrix inputs
     let advanced = false;
     for (let i = idx.length - 1; i >= 0; --i) {
       const it = idx[i];

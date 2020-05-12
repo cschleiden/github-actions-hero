@@ -35,13 +35,14 @@ export function mergeEnv(
   ctx: IExpressionContext,
   env?: EnvMap
 ): IExpressionContext {
-  const mergedCtx: IExpressionContext = {
+  return {
     ...ctx,
+    contexts: {
+      ...ctx.contexts,
+      env: {
+        ...ctx.contexts.env,
+        ...env,
+      },
+    },
   };
-  mergedCtx.contexts.env = {
-    ...mergedCtx.contexts.env,
-    ...env,
-  };
-
-  return mergedCtx;
 }

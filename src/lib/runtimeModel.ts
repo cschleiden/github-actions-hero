@@ -100,6 +100,9 @@ export interface RuntimeJob {
   /** Used for display purposes, distance from the root */
   level: number;
 
+  /** Id of the matrix generating job, if a matrix job */
+  matrix?: string;
+
   /** Ids of jobs this job depends on */
   dependsOn: string[];
 }
