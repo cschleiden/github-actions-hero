@@ -10,13 +10,15 @@ import { WorkflowExecution } from "../../components/workflowExecution/workflowEx
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
 import { ExpressionError } from "../../lib/expressions";
+import { RuntimeContexts } from "../../lib/expressions/evaluator";
 import { parse, ParseError } from "../../lib/parser/parser";
 import { run } from "../../lib/runner/runner";
 import { Event, RuntimeModel } from "../../lib/runtimeModel";
 
 function _run(
   events: Event[],
-  input: string
+  input: string,
+  additionalContexts?: Partial<RuntimeContexts>
 ): {
   workflowExecution: Map<Event, RuntimeModel>;
   err: Error | undefined;
@@ -31,7 +33,8 @@ function _run(
       const result = run(
         event,
         `.github/workflows/workflow.yaml`,
-        parsedWorkflow
+        parsedWorkflow,
+        additionalContexts
       );
 
       workflowExecution.set(event, result);
@@ -66,7 +69,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
 
   const onChange = React.useCallback(
     (input: string) => {
-      const { workflowExecution, err } = _run(l.events, input);
+      const { workflowExecution, err } = _run(l.events, input, l.contexts);
 
       setWorkflowExecution(workflowExecution);
       setErr(err);
@@ -160,6 +163,9 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
 
                   case err instanceof ExpressionError:
                     return <div>Expression error: {err.message}</div>;
+
+                  default:
+                    return <div>Error: {err.message}</div>;
                 }
               })()}
             </Flash>

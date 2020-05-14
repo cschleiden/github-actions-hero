@@ -1,12 +1,13 @@
 import { getEventPayload } from "../events/eventPayload";
-import { IExpressionContext } from "../expressions/evaluator";
+import { IExpressionContext, RuntimeContexts } from "../expressions/evaluator";
 import { Event } from "../runtimeModel";
 import { EnvMap } from "../workflow";
 
 export function getBaseContext(
   workflow: string,
   event: Event,
-  env: EnvMap
+  env: EnvMap,
+  additionalContexts?: Partial<RuntimeContexts>
 ): IExpressionContext {
   return {
     contexts: {
@@ -27,6 +28,7 @@ export function getBaseContext(
         event: getEventPayload(event.event),
       },
       env,
+      ...additionalContexts,
     },
   };
 }

@@ -1,7 +1,8 @@
 import { IExpressionContext } from "../expressions/evaluator";
 import { Conclusion, RuntimeJob, State } from "../runtimeModel";
 import { Job } from "../workflow";
-import { _ev, _evIf, _executeSteps } from "./runner";
+import { _ev, _evIf, _evMap } from "./expressions";
+import { _executeSteps } from "./runner";
 import { arr } from "./shared";
 
 function _executeJob(
@@ -27,7 +28,8 @@ function _executeJob(
     state: State.Done,
     conclusion,
     level,
-    dependsOn: Array.isArray(jobDef.needs) ? jobDef.needs : [jobDef.needs],
+    env: _evMap(jobDef.env, jobCtx),
+    dependsOn: arr(jobDef.needs),
   };
 }
 

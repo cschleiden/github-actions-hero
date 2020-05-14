@@ -1,3 +1,4 @@
+import { RuntimeContexts } from "../lib/expressions/evaluator";
 import { Event, RuntimeModel, StepType } from "../lib/runtimeModel";
 
 export interface Lesson {
@@ -27,6 +28,8 @@ export interface Lesson {
    * that string needs to be "executed" in a `run` step. Otherwise pass a custom evaluator.
    */
   success?: string | ((r: RuntimeModel[]) => boolean);
+
+  contexts?: Partial<RuntimeContexts>;
 }
 
 export function lessonSolved(lesson: Lesson, r: RuntimeModel[]): boolean {

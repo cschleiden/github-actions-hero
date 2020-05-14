@@ -1,4 +1,5 @@
 import { IssueActivities, PullRequestActivities } from "./events/activities";
+import { EnvMap } from "./workflow";
 
 //
 // Events
@@ -68,6 +69,9 @@ export type RuntimeStep = (
 
   /** Was this step skipped or not */
   skipped?: boolean;
+
+  /** Environment variables evaluated for this step */
+  env?: EnvMap;
 };
 
 //
@@ -102,6 +106,9 @@ export interface RuntimeJob {
 
   /** Ids of jobs this job depends on */
   dependsOn: string[];
+
+  /** Environment variables evaluated for this job */
+  env: EnvMap;
 }
 
 export interface RuntimeModel {

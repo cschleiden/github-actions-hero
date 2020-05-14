@@ -11,6 +11,7 @@ import { runsOnWindows } from "./runsOnWindows";
 import { skipJobIf } from "./skipJobIf";
 import { skipStepIf } from "./skipStepIf";
 import { useCheckoutAction } from "./useCheckoutAction";
+import { useSecret } from "./useSecret";
 
 /**
  * List of lessons to display in lesson mode. Order here is the order in which they are displayed
@@ -26,6 +27,7 @@ export const Lessons: Lesson[] = [
   useCheckoutAction,
   runsOnWindows,
   // runSchedule,
+  useSecret,
   skipJobIf,
   skipStepIf,
   matrixJob,

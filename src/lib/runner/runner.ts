@@ -1,46 +1,24 @@
-import { evaluateExpression, replaceExpressions } from "../expressions";
-import { IExpressionContext } from "../expressions/evaluator";
+import { IExpressionContext, RuntimeContexts } from "../expressions/evaluator";
 import { Event, RuntimeModel, RuntimeStep, StepType } from "../runtimeModel";
 import { Job, JobMap, On, Step, Workflow } from "../workflow";
 import { getBaseContext, mergeEnv } from "./context";
+import { _ev, _evIf, _evMap } from "./expressions";
 import { filterBranch, filterPaths } from "./glob/glob";
 import { executeJob } from "./runJobs";
 
 export class RunError extends Error {}
 
-/** Evaluate a single `if` expression */
-export function _evIf(
-  input: string | undefined,
-  ctx: IExpressionContext
-): boolean | undefined {
-  if (!input) {
-    return undefined;
-  }
-
-  return !!evaluateExpression(input, ctx);
-}
-
-/** Evaluate a generic expression */
-export function _ev(
-  input: string | undefined,
-  ctx: IExpressionContext
-): string | undefined {
-  if (!input) {
-    return input;
-  }
-
-  return replaceExpressions(input, ctx);
-}
-
 export function run(
   event: Event,
   workflowFilename: string,
-  workflow: Workflow
+  workflow: Workflow,
+  additionalContexts?: Partial<RuntimeContexts>
 ): RuntimeModel {
   const ctx: IExpressionContext = getBaseContext(
     workflowFilename,
     event,
-    workflow.env
+    workflow.env,
+    additionalContexts
   );
 
   const result: RuntimeModel = {
@@ -121,36 +99,38 @@ export function _executeSteps(
   steps: Step[],
   jobCtx: IExpressionContext
 ): RuntimeStep[] {
-  return steps.map((step) => {
-    const stepCtx = mergeEnv(jobCtx, step.env);
+  return steps.map((stepDef) => {
+    const stepCtx = mergeEnv(jobCtx, stepDef.env);
 
-    let runStep: RuntimeStep;
+    let step: RuntimeStep;
 
-    if ("run" in step) {
-      runStep = {
+    if ("run" in stepDef) {
+      step = {
         stepType: StepType.Run,
-        run: _ev(step.run, jobCtx),
+        run: _ev(stepDef.run, jobCtx),
       };
-    } else if ("uses" in step) {
-      runStep = {
+    } else if ("uses" in stepDef) {
+      step = {
         stepType: StepType.Uses,
-        uses: step.uses,
+        uses: stepDef.uses,
       };
     } else {
-      runStep = {
+      step = {
         stepType: StepType.Docker,
       };
     }
 
-    if (!!step.name) {
-      runStep.name = _ev(step.name, stepCtx);
+    if (!!stepDef.name) {
+      step.name = _ev(stepDef.name, stepCtx);
     }
 
-    if (!!step.if) {
-      runStep.skipped = !_evIf(step.if, stepCtx);
+    if (!!stepDef.if) {
+      step.skipped = !_evIf(stepDef.if, stepCtx);
     }
 
-    return runStep;
+    step.env = _evMap(stepDef.env, jobCtx);
+
+    return step;
   });
 }
 

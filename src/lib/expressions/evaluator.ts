@@ -17,19 +17,21 @@ import {
   toJson,
 } from "./parser";
 
+export interface RuntimeContexts {
+  github: any;
+  // TODO: Document and define when these are set
+  env?: any;
+  job?: any;
+  steps?: any;
+  runner?: any;
+  secrets?: { [key: string]: string };
+  strategy?: any;
+  matrix?: any;
+  needs?: any;
+}
+
 export interface IExpressionContext {
-  contexts: {
-    github: any;
-    // TODO: Document and define when these are set
-    env?: any;
-    job?: any;
-    steps?: any;
-    runner?: any;
-    secrets?: any;
-    strategy?: any;
-    matrix?: any;
-    needs?: any;
-  };
+  contexts: RuntimeContexts;
 }
 
 /**

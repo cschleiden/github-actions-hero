@@ -39,7 +39,7 @@ export const Job: React.FC<{
       className={`flex-0 border border-gray-500 rounded bg-white shadow relative my-3 mx-3 last:mr-0 ${
         job.conclusion == Conclusion.Skipped ? "opacity-50" : ""
       }`}
-      style={{ width: "240px" }}
+      style={{ minWidth: "240px" }}
     >
       <div
         className="absolute bg-gray-200 rounded-t-full border border-b-0 border-gray-500"
