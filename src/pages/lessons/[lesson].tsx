@@ -97,8 +97,8 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
         <div className="flex items-center">
           <div className="flex-1 justify-start">
-            <h2>Lesson {lesson}</h2>
-            <h3>{l.title}</h3>
+            <h2>{l.title}</h2>
+            <h3>Lesson {lesson}</h3>
           </div>
           <div className="flex flex-initial justify-end">
             <Pagination
