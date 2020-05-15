@@ -5,6 +5,7 @@ import Link from "next/link";
 import Router from "next/router";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { DynamicEditor } from "../../components/dynamicEditor";
 import { WorkflowExecution } from "../../components/workflowExecution/workflowExecution";
 import { Lessons } from "../../lessons";
@@ -118,7 +119,16 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
 
         <div className="markdown-body my-4">
-          <ReactMarkdown source={l.description} />
+          <ReactMarkdown
+            source={l.description}
+            renderers={{
+              code: ({ value, language }) => (
+                <SyntaxHighlighter language={language}>
+                  {value}
+                </SyntaxHighlighter>
+              ),
+            }}
+          />
         </div>
 
         <div className="flex flex-col flex-1">

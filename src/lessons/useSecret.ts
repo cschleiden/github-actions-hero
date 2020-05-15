@@ -1,3 +1,4 @@
+import { StepType } from "../lib/runtimeModel";
 import { Lesson } from "./lesson";
 
 const DeploymentKey = "aGVsbG8hIHRoaXMgaXMgYSB2ZXJ5IHNlY3JldCB0b2tlbg==";
@@ -5,7 +6,17 @@ const DeploymentKey = "aGVsbG8hIHRoaXMgaXMgYSB2ZXJ5IHNlY3JldCB0b2tlbg==";
 export const useSecret: Lesson = {
   title: `Use secrets`,
 
-  description: `Often you need a token. For this lesson, assume a secret with the name \`DEPLOYMENT_KEY\` has been defined. Use it to deploy the project.`,
+  description: `[Secrets](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets) are encrypted environment variables that you create in a repository or organization. The secrets you create are then available to use in GitHub Actions workflows.
+
+They are automatically masked in logs and are the safest way or providing keys or deployment tokens to your workflows. They can be accessed using the [\`secrets\`](https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts) context from an expression:
+
+\`\`\`yaml
+- run: echo $SECRET
+  env:
+    SECRET: \${{ secrets.MY_SECRET }}
+\`\`\`
+
+For this lesson, replace the hard-coded cloud token with a secret called \`DEPLOYMENT_KEY\``,
 
   workflow: `name: Checkout
 
@@ -19,7 +30,7 @@ jobs:
       run: ./build.sh
 
     - name: Deploy
-%      run: ./deploy --cloud-token=aGVsbG8hIHRoaXMgaXMgYSB2ZXJ5IHNlY3JldCB0b2tlbg==
+%      run: ./deploy --cloud-token=${DeploymentKey}
 %
 `,
 
@@ -42,8 +53,20 @@ jobs:
         return false;
       }
 
-      return job.steps.some((s) =>
-        Object.keys(s.env).some((k) => s.env[k] === DeploymentKey)
-      );
+      return job.steps.some((s) => {
+        // Check for a set environment variable
+        const envKey = Object.keys(s.env).find(
+          (k) => s.env[k] === DeploymentKey
+        );
+
+        if (!envKey || !envKey.length) {
+          return false;
+        }
+
+        // Check for a step using it
+        return (
+          s.stepType === StepType.Run && s.run.indexOf(`$${envKey[0]}`) >= 0
+        );
+      });
     }),
 };

@@ -10,7 +10,24 @@ export const Step: React.FC<{
 
   switch (step.stepType) {
     case StepType.Run:
-      content = <code>$ {step.run}</code>;
+      content = (
+        <div>
+          <code>$ {step.run}</code>
+          {step.env &&
+            Object.keys(step.env).length > 0 &&
+            Object.keys(step.env).map((k) => (
+              <div className="text-xs">
+                <ul className="list-none">
+                  <li>
+                    <code>
+                      {k}={step.env[k]}
+                    </code>
+                  </li>
+                </ul>
+              </div>
+            ))}
+        </div>
+      );
       break;
 
     case StepType.Uses:
