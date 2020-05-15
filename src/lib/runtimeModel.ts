@@ -42,9 +42,9 @@ export enum StepType {
 }
 
 export interface RuntimeRunStep {
-  name?: string;
-
   stepType: StepType.Run;
+
+  name?: string;
 
   run: string;
 }

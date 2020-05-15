@@ -1,9 +1,4 @@
-import {
-  Conclusion,
-  RuntimeRunStep,
-  RuntimeUsesStep,
-  StepType,
-} from "../runtimeModel";
+import { Conclusion, RuntimeStep, StepType } from "../runtimeModel";
 import { Job, RunStep } from "../workflow";
 import { run } from "./runner";
 
@@ -423,13 +418,15 @@ describe("Steps", () => {
     });
 
     expect(r.jobs[0].steps.length).toBe(2);
-    expect(r.jobs[0].steps[0]).toEqual<RuntimeRunStep>({
+    expect(r.jobs[0].steps[0]).toEqual<RuntimeStep>({
       stepType: StepType.Run,
       run: "echo 'Success'",
+      env: {},
     });
-    expect(r.jobs[0].steps[1]).toEqual<RuntimeUsesStep>({
+    expect(r.jobs[0].steps[1]).toEqual<RuntimeStep>({
       stepType: StepType.Uses,
       uses: "actions/checkout@v2",
+      env: {},
     });
   });
 
