@@ -27,7 +27,7 @@ function _executeJob(
     state: State.Done,
     conclusion,
     level,
-    dependsOn: Array.isArray(jobDef.needs) ? jobDef.needs : [jobDef.needs],
+    dependsOn: arr(jobDef.needs),
   };
 }
 
@@ -36,20 +36,33 @@ export function executeJob(
   jobDef: Job,
   level: number,
   jobCtx: IExpressionContext
-): RuntimeJob[] {
+): RuntimeJob {
   if (!jobDef.strategy?.matrix) {
     // Simple job
-    return [_executeJob(jobId, jobDef, level, jobCtx)];
+    const job = _executeJob(jobId, jobDef, level, jobCtx);
+    return job;
   }
 
   // Matrix job
+  const job: RuntimeJob = {
+    id: jobId,
+    name: jobId,
+    dependsOn: arr(jobDef.needs),
+    level,
+    state: State.Done,
+    conclusion: Conclusion.Success, // TODO: Should depend on the matrix jobs
+    steps: [],
+    runnerLabel: [],
+  };
+  const jobs: RuntimeJob[] = [];
+  job.matrixJobs = jobs;
+
   const keys = Object.keys(jobDef.strategy.matrix);
   const idx = keys.map((k) => ({
     key: k,
     idx: 0,
   }));
 
-  let jobs: RuntimeJob[] = [];
   while (true) {
     // Generate job
     const name = `${_ev(jobDef.name, jobCtx) || jobId} (${idx
@@ -77,8 +90,6 @@ export function executeJob(
       }
     );
 
-    job.matrix = jobId;
-
     jobs.push(job);
 
     // Iterate over matrix inputs
@@ -104,5 +115,5 @@ export function executeJob(
     }
   }
 
-  return jobs;
+  return job;
 }

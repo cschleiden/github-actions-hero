@@ -101,7 +101,7 @@ export interface RuntimeJob {
   level: number;
 
   /** Id of the matrix generating job, if a matrix job */
-  matrix?: string;
+  matrixJobs?: RuntimeJob[];
 
   /** Ids of jobs this job depends on */
   dependsOn: string[];

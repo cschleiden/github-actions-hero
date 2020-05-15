@@ -6,16 +6,39 @@ import { JobBox } from "./jobBox";
 import { Step } from "./step";
 
 export const Job: React.FC<{
+  className?: string;
   workflowVisId: number;
   job: RuntimeJob;
-}> = ({ workflowVisId, job }) => {
+  connectable?: boolean;
+}> = ({ className, workflowVisId, job, connectable = true }) => {
+  let content: JSX.Element;
+  if (job.matrixJobs) {
+    content = (
+      <div className="flex flex-row flex-wrap items-stretch justify-center">
+        {job.matrixJobs.map((job) => (
+          <Job workflowVisId={workflowVisId} job={job} connectable={false} />
+        ))}
+      </div>
+    );
+  } else {
+    content = (
+      <ul>
+        {job.steps.map((step, stepIdx) => (
+          <li key={stepIdx}>
+            <Step step={step} />
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <JobBox
       workflowVisId={workflowVisId}
-      headerClassname={
+      headerClassname={`${className || ""} ${
         job.conclusion == Conclusion.Skipped ? "opacity-50" : undefined
-      }
-      connectorId={job.id}
+      }`}
+      connectorId={connectable && job.id}
       header={
         <>
           <div className="self-center p-2">
@@ -24,15 +47,7 @@ export const Job: React.FC<{
           <div className="p-2 text-center font-bold flex-1">{job.name}</div>
         </>
       }
-      content={
-        <ul>
-          {job.steps.map((step, stepIdx) => (
-            <li key={stepIdx}>
-              <Step step={step} />
-            </li>
-          ))}
-        </ul>
-      }
+      content={content}
     />
   );
 };

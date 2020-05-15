@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RuntimeJob } from "../../lib/runtimeModel";
+import { Job } from "./job";
 import { JobBox } from "./jobBox";
-import { Step } from "./step";
 
 export const MatrixJob: React.FC<{
   workflowVisId: number;
@@ -17,13 +17,7 @@ export const MatrixJob: React.FC<{
       content={
         <div className="flex flex-row flex-wrap">
           {jobs.map((job) => (
-            <div className="flex-0 border border-gray-500 rounded bg-white shadow m-3">
-              {job.steps.map((step, stepIdx) => (
-                <li key={stepIdx}>
-                  <Step step={step} />
-                </li>
-              ))}
-            </div>
+            <Job workflowVisId={workflowVisId} job={job} connectable={false} />
           ))}
         </div>
       }

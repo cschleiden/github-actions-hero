@@ -239,7 +239,8 @@ describe("Jobs", () => {
       },
     });
 
-    expect(r.jobs.length).toBe(6);
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].matrixJobs.length).toBe(6);
   });
 
   it("matrix expression", () => {
@@ -263,8 +264,9 @@ describe("Jobs", () => {
       },
     });
 
-    expect(r.jobs.length).toBe(6);
-    expect((r.jobs[0].steps[0] as RunStep).run).toBe("echo 1");
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].matrixJobs.length).toBe(6);
+    expect((r.jobs[0].matrixJobs[0].steps[0] as RunStep).run).toBe("echo 1");
   });
 
   it("matrix runs-on expression", () => {
@@ -288,9 +290,9 @@ describe("Jobs", () => {
       },
     });
 
-    expect(r.jobs.length).toBe(2);
-    expect(r.jobs[0].runnerLabel).toEqual(["ubuntu-latest"]);
-    expect(r.jobs[1].runnerLabel).toEqual(["windows-latest"]);
+    expect(r.jobs.length).toBe(1);
+    expect(r.jobs[0].matrixJobs[0].runnerLabel).toEqual(["ubuntu-latest"]);
+    expect(r.jobs[0].matrixJobs[1].runnerLabel).toEqual(["windows-latest"]);
   });
 });
 
@@ -476,6 +478,8 @@ describe("Steps", () => {
     });
 
     expect(r.jobs[0].steps.length).toBe(1);
-    expect(r.jobs[0].steps[0].run).toBe("./run.sh bar baz");
+    expect("run" in r.jobs[0].steps[0] && r.jobs[0].steps[0].run).toBe(
+      "./run.sh bar baz"
+    );
   });
 });

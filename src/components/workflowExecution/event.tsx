@@ -2,7 +2,6 @@ import { BranchName } from "@primer/components";
 import Octicon, { File, GitBranch } from "@primer/octicons-react";
 import * as React from "react";
 import { Event } from "../../lib/runtimeModel";
-import { makeSafeForCSS } from "./utils";
 
 export const WorkflowEvent: React.FC<{ id: number; event: Event }> = ({
   id,
@@ -64,9 +63,7 @@ export const WorkflowEvent: React.FC<{ id: number; event: Event }> = ({
         }}
       >
         <div
-          className={`absolute bg-gray-200 rounded-full c-${id}-${makeSafeForCSS(
-            event.event
-          )}`}
+          className={`absolute bg-gray-200 rounded-full c-${id}-event`}
           style={{
             bottom: "4px",
             left: "4px",

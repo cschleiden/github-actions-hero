@@ -17,7 +17,7 @@ export const ConnectorPoints: React.FC<{
         }}
       >
         <div
-          className={`absolute bg-gray-600 rounded-full ci-${workflowVisId}-${makeSafeForCSS(
+          className={`absolute bg-gray-600 rounded-full c-${workflowVisId}-i-${makeSafeForCSS(
             connectorId
           )}`}
           style={{
@@ -38,7 +38,7 @@ export const ConnectorPoints: React.FC<{
         }}
       >
         <div
-          className={`absolute bg-blue-400 rounded-full co-${workflowVisId}-${makeSafeForCSS(
+          className={`absolute bg-blue-400 rounded-full c-${workflowVisId}-o-${makeSafeForCSS(
             connectorId
           )}`}
           style={{
