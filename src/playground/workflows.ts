@@ -1,5 +1,35 @@
 export const PlaygroundWorkflows = [
   {
+    name: "Matrix",
+    workflow: `name: Matrix
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: ./build.sh
+
+  test:
+    needs: build
+    runs-on: \${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        browser: [Chrome, Edge, Firefox]
+    steps:
+    - run: ./executeBrowserTest --browser=\${{ matrix.browser }}
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - run: ./uploadRelease.sh
+`,
+  },
+  {
     name: "Dependencies",
     workflow: `name: Dependencies
 
@@ -43,35 +73,5 @@ jobs:
     needs: [with-optional-step]
     steps:
     - run: echo "Job 5"`,
-  },
-  {
-    name: "Matrix",
-    workflow: `name: Matrix
-
-on: [push]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - run: ./build.sh
-
-  test:
-    needs: build
-    runs-on: \${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        browser: [Chrome, Edge, Firefox]
-    steps:
-    - run: ./executeBrowserTest --browser=\${{ matrix.browser }}
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - run: ./uploadRelease.sh
-`,
   },
 ];

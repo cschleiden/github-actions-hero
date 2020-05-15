@@ -112,6 +112,7 @@ const PlaygroundPage: NextPage = () => {
                     return <div>Expression error: {err.message}</div>;
 
                   default:
+                    console.error(err);
                     return <div>{err.message}</div>;
                 }
               })()}

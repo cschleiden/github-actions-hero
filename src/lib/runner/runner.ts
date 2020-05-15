@@ -38,7 +38,7 @@ export function run(
     const jobDef = workflow.jobs[jobId];
     const jobCtx = mergeEnv(ctx, jobDef.env);
 
-    result.jobs.push(...executeJob(jobId, jobDef, level, jobCtx));
+    result.jobs.push(executeJob(jobId, jobDef, level, jobCtx));
   }
 
   return result;

@@ -38,49 +38,64 @@ export function executeJob(
   jobDef: Job,
   level: number,
   jobCtx: IExpressionContext
-): RuntimeJob[] {
+): RuntimeJob {
   if (!jobDef.strategy?.matrix) {
-    return [_executeJob(jobId, jobDef, level, jobCtx)];
+    // Simple job
+    const job = _executeJob(jobId, jobDef, level, jobCtx);
+    return job;
   }
 
   // Matrix job
+  const job: RuntimeJob = {
+    id: jobId,
+    runnerLabel: [],
+    name: jobId,
+    steps: [],
+    state: State.Done,
+    conclusion: Conclusion.Success, // TODO: Should depend on the matrix jobs
+    level,
+    env: _evMap(jobDef.env, jobCtx),
+    dependsOn: arr(jobDef.needs),
+  };
+  const jobs: RuntimeJob[] = [];
+  job.matrixJobs = jobs;
+
   const keys = Object.keys(jobDef.strategy.matrix);
   const idx = keys.map((k) => ({
     key: k,
     idx: 0,
   }));
 
-  let jobs: RuntimeJob[] = [];
   while (true) {
     // Generate job
     const name = `${_ev(jobDef.name, jobCtx) || jobId} (${idx
       .map((x) => jobDef.strategy.matrix[x.key][x.idx])
       .join(", ")})`;
 
-    jobs.push(
-      _executeJob(
-        `${jobId}-${name}`,
-        {
-          ...jobDef,
-          name,
-        },
-        level,
-        {
-          ...jobCtx,
-          contexts: {
-            ...jobCtx.contexts,
-            matrix: {
-              ...idx.reduce((m, x) => {
-                m[x.key] = jobDef.strategy.matrix[x.key][x.idx];
-                return m;
-              }, {}),
-            },
+    const job = _executeJob(
+      `${jobId}-${name}`,
+      {
+        ...jobDef,
+        name,
+      },
+      level,
+      {
+        ...jobCtx,
+        contexts: {
+          ...jobCtx.contexts,
+          matrix: {
+            ...idx.reduce((m, x) => {
+              m[x.key] = jobDef.strategy.matrix[x.key][x.idx];
+              return m;
+            }, {}),
           },
-        }
-      )
+        },
+      }
     );
 
-    //
+    jobs.push(job);
+
+    // Iterate over matrix inputs
     let advanced = false;
     for (let i = idx.length - 1; i >= 0; --i) {
       const it = idx[i];
@@ -103,5 +118,5 @@ export function executeJob(
     }
   }
 
-  return jobs;
+  return job;
 }
