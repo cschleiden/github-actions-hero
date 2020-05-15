@@ -91,7 +91,7 @@ const PlaygroundPage: NextPage = () => {
 
         <div className="flex flex-col flex-1">
           <DynamicEditor
-            workflow={input}
+            workflow={selectedWorkflow.workflow}
             change={(v) => setInput(v)}
             everythingEditable={true}
           />
