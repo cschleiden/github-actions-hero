@@ -80,7 +80,7 @@ export const Editor: React.FC<{
       {ranges.map((r, i) => (
         <ReactCodeMirror
           key={i}
-          className={(r.editable && style.editor) || ""}
+          className={(r.editable ? style.editable : style.readonly) || ""}
           editorDidMount={(e) => (editors.current[i] = e)}
           value={r.text}
           options={{
@@ -91,6 +91,7 @@ export const Editor: React.FC<{
             coverGutterNextToScrollbar: true,
             viewportMargin: Infinity,
             readOnly: !r.editable,
+            autofocus: r.editable,
             firstLineNumber: r.start + 1,
             indentWithTabs: false,
             smartIndent: true,

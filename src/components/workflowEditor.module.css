@@ -1,3 +1,7 @@
-.editor :global(.CodeMirror-line) {
-    background: #333 !important;
+.readonly {
+    opacity: 0.9;
+}
+
+.editable {
+    margin: 1px 0;
 }
