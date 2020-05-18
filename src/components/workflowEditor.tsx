@@ -96,6 +96,10 @@ export const Editor: React.FC<{
             indentWithTabs: false,
             smartIndent: true,
             tabSize: 2,
+            extraKeys: {
+              Tab: (cm) => cm.execCommand("indentMore"),
+              "Shift-Tab": (cm) => cm.execCommand("indentLess"),
+            },
           }}
           onChange={(editor, data, value) => {
             const v = ranges.map((r) => r.text);
