@@ -15,8 +15,13 @@ export const Job: React.FC<{
   if (job.matrixJobs) {
     content = (
       <div className="flex flex-row flex-wrap items-stretch justify-center">
-        {job.matrixJobs.map((job) => (
-          <Job workflowVisId={workflowVisId} job={job} connectable={false} />
+        {job.matrixJobs.map((job, idx) => (
+          <Job
+            key={`${job.id}-${idx}`}
+            workflowVisId={workflowVisId}
+            job={job}
+            connectable={false}
+          />
         ))}
       </div>
     );

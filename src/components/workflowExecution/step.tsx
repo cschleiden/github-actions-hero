@@ -1,5 +1,5 @@
-import { Link, StyledOcticon } from "@primer/components";
-import { Skip } from "@primer/octicons-react";
+import { Link } from "@primer/components";
+import { SkipIcon } from "@primer/octicons-v2-react";
 import * as React from "react";
 import { RuntimeStep, StepType } from "../../lib/runtimeModel";
 
@@ -56,7 +56,7 @@ export const Step: React.FC<{
     <div className={`p-1 text-sm ${step.skipped ? "opacity-50" : ""}`}>
       {step.name && <div className="italic text-xs">{step.name}</div>}
       <div>
-        {step.skipped ? <StyledOcticon icon={Skip} /> : null}
+        {step.skipped ? <SkipIcon /> : null}
         {content}
       </div>
     </div>

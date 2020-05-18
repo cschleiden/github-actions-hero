@@ -1,12 +1,12 @@
-import { Check, Icon, Skip } from "@primer/octicons-react";
+import { CheckIcon, Icon, SkipIcon } from "@primer/octicons-v2-react";
 import { Conclusion } from "../../lib/runtimeModel";
 
 export function conclusionToIcon(conclusion: Conclusion): Icon {
   switch (conclusion) {
     case Conclusion.Skipped:
-      return Skip;
+      return SkipIcon;
 
     default:
-      return Check;
+      return CheckIcon;
   }
 }

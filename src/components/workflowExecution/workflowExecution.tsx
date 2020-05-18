@@ -37,7 +37,6 @@ export const WorkflowExecution: React.FC<{
     setConnections(
       c.flat(1).map((x) => [`.c-${id}-${x[0]}`, `.c-${id}-${x[1]}`])
     );
-    console.log(c.flat(1).map((x) => [`c-${id}-${x[0]}`, `c-${id}-${x[1]}`]));
   }, [events, executionModel]);
 
   return (

@@ -1,5 +1,5 @@
 import { BranchName } from "@primer/components";
-import Octicon, { File, GitBranch } from "@primer/octicons-react";
+import { FileIcon, GitBranchIcon } from "@primer/octicons-v2-react";
 import * as React from "react";
 import { Event } from "../../lib/runtimeModel";
 
@@ -28,7 +28,7 @@ export const WorkflowEvent: React.FC<{ id: number; event: Event }> = ({
           annotations.push(
             <div key="branch">
               <BranchName>
-                <Octicon icon={GitBranch} className="mr-1" />
+                <GitBranchIcon className="mr-1" />
                 {event.branch}
               </BranchName>
             </div>
@@ -37,11 +37,11 @@ export const WorkflowEvent: React.FC<{ id: number; event: Event }> = ({
 
         if ("files" in event) {
           annotations.push(
-            <div>
+            <div key="files">
               {event.files.map((f) => (
                 <div key={f}>
                   <BranchName>
-                    <Octicon icon={File} className="mr-1" />
+                    <FileIcon className="mr-1" />
                     {f}
                   </BranchName>
                 </div>

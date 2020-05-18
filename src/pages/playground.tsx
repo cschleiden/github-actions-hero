@@ -1,6 +1,15 @@
-import { Button, Flash, SelectMenu } from "@primer/components";
+import { Button, Flash, SelectMenu, Tooltip } from "@primer/components";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ClippyIcon,
+} from "@primer/octicons-v2-react";
 import { YAMLException } from "js-yaml";
-import { NextPage } from "next";
+import {
+  compressToEncodedURIComponent,
+  decompressFromEncodedURIComponent,
+} from "lz-string";
+import { NextPage, NextPageContext } from "next";
 import Link from "next/link";
 import * as React from "react";
 import { DynamicEditor } from "../components/dynamicEditor";
@@ -10,6 +19,7 @@ import { parse, ParseError } from "../lib/parser/parser";
 import { run } from "../lib/runner/runner";
 import { Event, RuntimeModel } from "../lib/runtimeModel";
 import { PlaygroundWorkflows } from "../playground/workflows";
+import { wait } from "../utils/wait";
 
 const defaultEvents: Event[] = [
   {
@@ -18,11 +28,21 @@ const defaultEvents: Event[] = [
   },
 ];
 
-const PlaygroundPage: NextPage = () => {
+const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
   const [selectedWorkflow, setSelectedWorkflow] = React.useState(
-    PlaygroundWorkflows[0]
+    (w && { name: "Custom", workflow: decompressFromEncodedURIComponent(w) }) ||
+      PlaygroundWorkflows[0]
   );
   const [input, setInput] = React.useState(selectedWorkflow.workflow);
+  const [copied, setCopied] = React.useState(false);
+  const copyContent = React.useCallback(async () => {
+    const urlContent = compressToEncodedURIComponent(input);
+    const url = `https://github-actions-hero.now.sh/playground?w=${urlContent}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    await wait(2000);
+    setCopied(false);
+  }, [input]);
 
   let err: Error | undefined;
   let workflowExecution: { [trigger: string]: RuntimeModel } = {};
@@ -67,7 +87,9 @@ const PlaygroundPage: NextPage = () => {
           </div>
           <div className="flex flex-initial justify-end">
             <SelectMenu>
-              <Button as="summary">Workflow: {selectedWorkflow.name}</Button>
+              <Button as="summary">
+                Workflow: {selectedWorkflow.name} <ChevronDownIcon />
+              </Button>
               <SelectMenu.Modal>
                 <SelectMenu.Header>Example workflows</SelectMenu.Header>
                 <SelectMenu.List>
@@ -86,6 +108,15 @@ const PlaygroundPage: NextPage = () => {
                 </SelectMenu.List>
               </SelectMenu.Modal>
             </SelectMenu>
+            <Tooltip text="Copy link to clipboard" direction="w">
+              <Button className="ml-2" onClick={() => copyContent()}>
+                {copied ? (
+                  <CheckIcon className="text-green-600" />
+                ) : (
+                  <ClippyIcon />
+                )}
+              </Button>
+            </Tooltip>
           </div>
         </div>
 
@@ -134,5 +165,13 @@ const PlaygroundPage: NextPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps(context: NextPageContext) {
+  return {
+    props: {
+      w: context.query["w"] || null,
+    },
+  };
+}
 
 export default PlaygroundPage;

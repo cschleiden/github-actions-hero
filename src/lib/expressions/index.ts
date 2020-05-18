@@ -40,7 +40,6 @@ export function evaluateExpression(
   const cst = parser.expression();
 
   const result = evaluator.visit(cst, context);
-  // console.log(expression, result);
 
   if (lexResult.errors.length > 0 || parser.errors.length > 0) {
     throw new ExpressionError(lexResult.errors, parser.errors);
