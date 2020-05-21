@@ -17,6 +17,13 @@ export class ExpressionError extends Error {
 
 const expr = /\$\{\{(.*?)\}\}/gm;
 
+export function parseExpression(expression: string) {
+  const lexResult = ExpressionLexer.tokenize(expression);
+  parser.input = lexResult.tokens;
+  const cst = parser.expression();
+  return cst;
+}
+
 /**
  * Evaluates a single expression with the given context
  *

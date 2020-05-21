@@ -16,10 +16,3 @@ The tutorial has limited support for `echo` and outputting environment variables
 
 ### Logic
 
-Tests are co-located.
-
-- `lib/workflow.ts` - Workflow typing
-- `lib/parser` - `js-yaml` and `ajv` based workflow YAML parser and validator
-- `lib/expressions` - GitHub Actions Expression parser and interpreter
-- `lib/runner` - Transforms a parsed workflow into an approximated execution model. Uses expression parser/interpreter.
-- `lib/runtimeModel.ts` - Runtime model

@@ -1,0 +1,3 @@
+{
+  "jest.rootPath": "./packages/github-actions-interpreter"
+}

@@ -17,12 +17,12 @@ const Comma = chevrotain.createToken({ name: "Comma", pattern: /,/ });
  * so define all supported ones.
  * see https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts
  */
-const Context = chevrotain.createToken({
+export const Context = chevrotain.createToken({
   name: "Context",
   pattern: /github|env|job|steps|runner|secrets|strategy|matrix|needs/,
 });
-const Dot = chevrotain.createToken({ name: "Dot", pattern: /\./ });
-const ContextMember = chevrotain.createToken({
+export const Dot = chevrotain.createToken({ name: "Dot", pattern: /\./ });
+export const ContextMember = chevrotain.createToken({
   name: "ContextMember",
   pattern: /[a-zA-Z_][a-zA-Z0-9-_]*/,
 });
@@ -30,51 +30,51 @@ const ContextMember = chevrotain.createToken({
 //
 // Operators
 //
-const Operator = chevrotain.createToken({
+export const Operator = chevrotain.createToken({
   name: "Operator",
   pattern: chevrotain.Lexer.NA,
 });
-const And = chevrotain.createToken({
+export const And = chevrotain.createToken({
   name: "And",
   pattern: /&&/,
   categories: Operator,
 });
-const Or = chevrotain.createToken({
+export const Or = chevrotain.createToken({
   name: "Or",
   pattern: /\|\|/,
   categories: Operator,
 });
-const Eq = chevrotain.createToken({
+export const Eq = chevrotain.createToken({
   name: "Eq",
   pattern: /==/,
   categories: Operator,
 });
-const NEq = chevrotain.createToken({
+export const NEq = chevrotain.createToken({
   name: "NotEq",
   pattern: /!=/,
   categories: Operator,
 });
-const LT = chevrotain.createToken({
+export const LT = chevrotain.createToken({
   name: "LT",
   pattern: /</,
   categories: Operator,
 });
-const LTE = chevrotain.createToken({
+export const LTE = chevrotain.createToken({
   name: "LTE",
   pattern: /<=/,
   categories: Operator,
 });
-const GT = chevrotain.createToken({
+export const GT = chevrotain.createToken({
   name: "GT",
   pattern: />/,
   categories: Operator,
 });
-const GTE = chevrotain.createToken({
+export const GTE = chevrotain.createToken({
   name: "GTE",
   pattern: />=/,
   categories: Operator,
 });
-const Not = chevrotain.createToken({
+export const Not = chevrotain.createToken({
   name: "Not",
   pattern: /!/,
   categories: Operator,
@@ -84,46 +84,46 @@ const Not = chevrotain.createToken({
 // Functions
 //
 // TODO: Adding all functions as tokens might not be the best idea, but this way we get validation during parsing
-const Function = chevrotain.createToken({
+export const Function = chevrotain.createToken({
   name: "Function",
   pattern: chevrotain.Lexer.NA,
 });
-const contains = chevrotain.createToken({
+export const contains = chevrotain.createToken({
   name: "contains",
   pattern: /contains/,
   categories: Function,
 });
-const startsWith = chevrotain.createToken({
+export const startsWith = chevrotain.createToken({
   name: "startsWith",
   pattern: /startsWith/,
   categories: Function,
 });
-const endsWith = chevrotain.createToken({
+export const endsWith = chevrotain.createToken({
   name: "endsWith",
   pattern: /endsWith/,
   categories: Function,
 });
-const join = chevrotain.createToken({
+export const join = chevrotain.createToken({
   name: "join",
   pattern: /join/,
   categories: Function,
 });
-const toJson = chevrotain.createToken({
+export const toJson = chevrotain.createToken({
   name: "toJson",
   pattern: /toJson/,
   categories: Function,
 });
 
-const StringLiteral = chevrotain.createToken({
+export const StringLiteral = chevrotain.createToken({
   name: "StringLiteral",
   //pattern: /'(:?[^'']|\\(:?[bfnrtv\\/]|u[0-9a-fA-F]{4}))*'/,
   pattern: /'((?:''|[^'])*)'/,
 });
-const NumberLiteral = chevrotain.createToken({
+export const NumberLiteral = chevrotain.createToken({
   name: "NumberLiteral",
   pattern: /-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/,
 });
-const WhiteSpace = chevrotain.createToken({
+export const WhiteSpace = chevrotain.createToken({
   name: "WhiteSpace",
   pattern: /[ \t\n\r]+/,
   group: chevrotain.Lexer.SKIPPED,
@@ -284,10 +284,7 @@ class ExpressionParser extends chevrotain.CstParser {
 //////////
 
 // reuse the same parser instance.
+export const defaultRule = "expression";
 export const parser = new ExpressionParser();
 export const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
 export { ExpressionLexer };
-// Operators
-export { And, Or, Eq, NEq, LT, LTE, GT, GTE };
-// Functions
-export { contains, startsWith, endsWith, join, toJson };
