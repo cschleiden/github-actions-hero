@@ -1,0 +1,38 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import "codemirror/lib/codemirror.css";
+@import "codemirror/theme/monokai.css";
+@import "github-markdown-css/github-markdown.css";
+
+body {
+  @apply bg-white
+}
+
+h1 {
+  @apply text-5xl font-bold m-6;
+}
+
+h2 {
+  @apply text-3xl font-bold;
+}
+
+h3 {
+  @apply font-bold;
+}
+
+a {
+  @apply text-blue-600;
+}
+
+.CodeMirror {
+    height: auto !important;
+}
+
+.react-connect-elements-container {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}

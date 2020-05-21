@@ -1,0 +1,29 @@
+{
+  "name": "github-actions-interpreter",
+  "version": "0.5.0",
+  "author": "Christopher Schleiden <cschleiden@live.de>",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.modern.js",
+  "types": "dist/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cschleiden/github-actions-hero.git"
+  },
+  "scripts": {
+    "dev": "microbundle watch",
+    "build": "microbundle --jsx React.createElement -f modern,umd,es,cjs --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "ajv": "^6.12.2",
+    "chevrotain": "^7.0.1",
+    "js-yaml": "^3.13.1",
+    "micromatch": "^4.0.2"
+  },
+  "peerDependencies": {
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  }
+}

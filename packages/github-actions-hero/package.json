@@ -1,0 +1,31 @@
+{
+  "name": "github-actions-hero",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@primer/components": "18.1.0",
+    "@primer/octicons-v2-react": "0.0.0-dd899ea",
+    "codemirror": "^5.53.2",
+    "codemirror-github-dark": "^0.4.1",
+    "github-actions-interpreter": "0.5.0",
+    "github-markdown-css": "^4.0.0",
+    "lz-string": "^1.4.4",
+    "next": "^9.4.0",
+    "react": "16.13.1",
+    "react-codemirror2": "^7.1.0",
+    "react-dom": "16.13.1",
+    "react-ga": "^2.7.0",
+    "react-markdown": "^4.3.1",
+    "react-syntax-highlighter": "^12.2.1",
+    "styled-components": "^5.1.0",
+    "tailwindcss": "^1.3.4"
+  },
+  "devDependencies": {
+  }
+}
