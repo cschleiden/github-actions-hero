@@ -3,6 +3,7 @@ import { Event, RuntimeModel } from "../lib/runtimeModel";
 import { WorkflowEvent } from "./event";
 import { Job } from "./job";
 import { groupJobs } from "./jobGroup";
+import { Connectors } from "./react-connect-elements";
 import { flatten, makeSafeForCSS } from "./utils";
 
 export const WorkflowExecution: React.FC<{
@@ -35,12 +36,11 @@ export const WorkflowExecution: React.FC<{
     <React.Fragment>
       <div className={`workflow-${id} relative`}>
         {connections && connections.length > 0 && (
-          // <DynamicConnections
-          //   selector={`.workflow-${id}`}
-          //   elements={connections.map((c) => ({ from: c[0], to: c[1] }))}
-          //   strokeWidth={2}
-          // />
-          <div />
+          <Connectors
+            selector={`.workflow-${id}`}
+            elements={connections.map((c) => ({ from: c[0], to: c[1] }))}
+            strokeWidth={2}
+          />
         )}
         <div className="events pb-2 flex justify-center">
           {/* Events for workflow */}

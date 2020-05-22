@@ -2,7 +2,7 @@ import * as React from "react";
 import { PureComponent } from "react";
 import { connectElements } from "./utils";
 
-export default class ReactConnectElements extends PureComponent<{
+export class Connectors extends PureComponent<{
   elements: { from: string; to: string; color?: string }[];
   overlay: number;
   selector: string;
@@ -33,21 +33,23 @@ export default class ReactConnectElements extends PureComponent<{
   connectAll = () => {
     const { elements } = this.props;
 
-    elements.forEach((element, index) => {
-      const start = document.querySelector(element.from);
-      const end = document.querySelector(element.to);
-      const path = this.svg.current.querySelector(`.path${index + 1}`);
+    if (typeof document !== undefined) {
+      elements.forEach((element, index) => {
+        const start = document.querySelector(element.from);
+        const end = document.querySelector(element.to);
+        const path = this.svg.current.querySelector(`.path${index + 1}`);
 
-      if (start && end) {
-        connectElements(
-          this.svgContainer.current,
-          this.svg.current,
-          path,
-          start,
-          end
-        );
-      }
-    });
+        if (start && end) {
+          connectElements(
+            this.svgContainer.current,
+            this.svg.current,
+            path,
+            start,
+            end
+          );
+        }
+      });
+    }
   };
 
   render() {
@@ -73,7 +75,5 @@ export default class ReactConnectElements extends PureComponent<{
         </svg>
       </div>
     );
-
-    return null;
   }
 }
