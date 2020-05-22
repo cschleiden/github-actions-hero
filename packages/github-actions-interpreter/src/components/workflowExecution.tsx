@@ -33,7 +33,7 @@ export const WorkflowExecution: React.FC<{
 
   return (
     <React.Fragment>
-      <div className={`bg-gray-300 p-3 workflow-${id} relative`}>
+      <div className={`workflow-${id} relative`}>
         {connections && connections.length > 0 && (
           // <DynamicConnections
           //   selector={`.workflow-${id}`}

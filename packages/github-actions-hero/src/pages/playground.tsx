@@ -156,7 +156,7 @@ const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
         )}
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center flex-wrap">
+      <div className="flex-1 bg-gray-300 p-3 h-screen overflow-auto flex flex-row justify-center flex-wrap">
         {defaultEvents.map((event, idx) => (
           <WorkflowExecution
             key={event.event}

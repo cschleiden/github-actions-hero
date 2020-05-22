@@ -13,10 +13,11 @@
     "url": "git+https://github.com/cschleiden/github-actions-hero.git"
   },
   "scripts": {
-    "dev": "microbundle watch",
+    "dev": "microbundle watch --jsx React.createElement -f modern,umd,es,cjs --tsconfig ./tsconfig.json",
     "build": "microbundle --jsx React.createElement -f modern,umd,es,cjs --tsconfig ./tsconfig.json"
   },
   "dependencies": {
+    "@primer/octicons-v2-react": "0.0.0-dd899ea",
     "ajv": "^6.12.2",
     "chevrotain": "^7.0.1",
     "js-yaml": "^3.13.1",
