@@ -14,5 +14,4 @@ The tutorial has limited support for `echo` and outputting environment variables
 
 ## Structure
 
-### Logic
-
+_Currently working on splitting this into separate components so that I can use it in https://github.com/cschleiden/vscode-github-actions_
