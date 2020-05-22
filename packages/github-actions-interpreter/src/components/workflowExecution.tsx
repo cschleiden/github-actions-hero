@@ -32,6 +32,22 @@ export const WorkflowExecution: React.FC<{
     );
   }, [events, executionModel]);
 
+  // Handle window resize
+  const [_, setResizeState] = React.useState(1);
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const onResize = () => {
+        setResizeState((s) => s + 1);
+      };
+
+      window.addEventListener("resize", onResize);
+
+      return () => {
+        window.removeEventListener("resize", onResize);
+      };
+    }
+  }, []);
+
   return (
     <React.Fragment>
       <div className={`workflow-${id} relative`}>
