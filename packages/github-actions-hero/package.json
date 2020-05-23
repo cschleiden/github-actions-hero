@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "yarn --cwd packages/github-actions-hero dev",
-    "build": "yarn --cwd packages/github-actions-hero build",
-    "start": "yarn --cwd packages/github-actions-hero start"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
     "@primer/components": "18.1.0",
