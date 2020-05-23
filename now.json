@@ -1,7 +1,7 @@
 {
   "version": 2,
   "builds": [
-    { "src": "packages/github-actions-hero/package.json", "use": "@now/next" }
+    { "src": "packages/github-actions-hero/package.json", "use": "@now/next@canary" }
   ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/packages/github-actions-hero/$1" }
