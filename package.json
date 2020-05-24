@@ -10,7 +10,7 @@
     "dev": "concurrently --kill-others-on-fail \"yarn dev-interpreter\" \"yarn dev-hero\"",
     "build-hero": "yarn workspace github-actions-hero build",
     "build-interpreter": "yarn workspace github-actions-interpreter build",
-    "build": "concurrently --kill-others-on-fail \"yarn build-interpreter\" \"yarn build-hero\""
+    "build": "yarn build-interpreter && yarn build-hero"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
