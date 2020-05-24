@@ -1,0 +1,29 @@
+name: Deploy Actions Hero
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node
+      with:
+        node-version: 12
+    - uses: borales/actions-yarn@v2.0.0
+      with:
+        cmd: build
+    - name: Vercel Action
+      uses: amondnet/vercel-action@v19.0.1+1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-project-id: github-actions-hero
+        vercel-org-id: cschleiden
+        working-directory: ./packages/github-actions-hero
