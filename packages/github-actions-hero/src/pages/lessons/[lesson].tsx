@@ -5,10 +5,10 @@ import {
   parse,
   ParseError,
   run,
+  RuntimeContexts,
   RuntimeModel,
   WorkflowExecution,
 } from "github-actions-interpreter";
-import { RuntimeContexts } from "github-actions-interpreter/dist/src/lib/expressions/evaluator";
 import { YAMLException } from "js-yaml";
 import { NextPage } from "next";
 import Link from "next/link";
