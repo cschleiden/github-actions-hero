@@ -27,6 +27,6 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-project-id: cschleiden/github-actions-hero
-        vercel-org-id: cschleiden
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         working-directory: ./packages/github-actions-hero
