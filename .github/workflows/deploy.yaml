@@ -18,6 +18,9 @@ jobs:
         node-version: 12
     - uses: borales/actions-yarn@v2.0.0
       with:
+        cmd: install
+    - uses: borales/actions-yarn@v2.0.0
+      with:
         cmd: build
     - name: Vercel Action
       uses: amondnet/vercel-action@v19.0.1+1
