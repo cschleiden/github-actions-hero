@@ -1,6 +1,8 @@
 import { ILexingError, IRecognitionException } from "chevrotain";
-import { evaluator, IExpressionContext } from "./evaluator";
+import { evaluator, IExpressionContext, RuntimeContexts } from "./evaluator";
 import { ExpressionLexer, parser } from "./parser";
+
+export type { IExpressionContext, RuntimeContexts };
 
 export class ExpressionError extends Error {
   constructor(
