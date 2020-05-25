@@ -4,6 +4,15 @@ import {
   ChevronDownIcon,
   ClippyIcon,
 } from "@primer/octicons-v2-react";
+import {
+  Event,
+  ExpressionError,
+  parse,
+  ParseError,
+  run,
+  RuntimeModel,
+  WorkflowExecution,
+} from "github-actions-interpreter";
 import { YAMLException } from "js-yaml";
 import {
   compressToEncodedURIComponent,
@@ -13,11 +22,6 @@ import { NextPage, NextPageContext } from "next";
 import Link from "next/link";
 import * as React from "react";
 import { DynamicEditor } from "../components/dynamicEditor";
-import { WorkflowExecution } from "../components/workflowExecution/workflowExecution";
-import { ExpressionError } from "../lib/expressions";
-import { parse, ParseError } from "../lib/parser/parser";
-import { run } from "../lib/runner/runner";
-import { Event, RuntimeModel } from "../lib/runtimeModel";
 import { PlaygroundWorkflows } from "../playground/workflows";
 import { wait } from "../utils/wait";
 
@@ -152,7 +156,7 @@ const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
         )}
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center flex-wrap">
+      <div className="flex-1 bg-gray-300 p-3 h-screen overflow-auto flex flex-row justify-center flex-wrap">
         {defaultEvents.map((event, idx) => (
           <WorkflowExecution
             key={event.event}

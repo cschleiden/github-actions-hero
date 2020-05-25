@@ -1,4 +1,4 @@
-import { StepType } from "../lib/runtimeModel";
+import { StepType } from "github-actions-interpreter";
 import { Lesson } from "./lesson";
 
 export const skipStepIf: Lesson = {
