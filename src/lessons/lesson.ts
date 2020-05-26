@@ -1,9 +1,5 @@
-import {
-  Event,
-  RuntimeContexts,
-  RuntimeModel,
-  StepType,
-} from "github-actions-interpreter";
+import { RuntimeContexts } from "../lib/expressions/evaluator";
+import { Event, RuntimeModel, StepType } from "../lib/runtimeModel";
 
 export interface Lesson {
   /**

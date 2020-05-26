@@ -1,4 +1,4 @@
-import { Conclusion } from "github-actions-interpreter";
+import { Conclusion } from "../lib/runtimeModel";
 import { Lesson } from "./lesson";
 
 export const skipJobIf: Lesson = {
