@@ -1,4 +1,4 @@
-import { StepType } from "github-actions-interpreter";
+import { StepType } from "../lib/runtimeModel";
 import { Lesson } from "./lesson";
 
 const DeploymentKey = "aGVsbG8hIHRoaXMgaXMgYSB2ZXJ5IHNlY3JldCB0b2tlbg==";
