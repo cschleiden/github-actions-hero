@@ -10,7 +10,7 @@ import {
   WorkflowExecution,
 } from "github-actions-interpreter";
 import { YAMLException } from "js-yaml";
-import { NextPage } from "next";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Link from "next/link";
 import Router from "next/router";
 import * as React from "react";
@@ -202,10 +202,21 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
   );
 };
 
-LessonPage.getInitialProps = (context) => {
-  const lesson = parseInt(context.query["lesson"] as string, 10);
+export const getStaticProps: GetStaticProps = async (context) => {
+  const lesson = parseInt(context.params["lesson"] as string, 10);
 
-  return { lesson };
+  return { props: { lesson } };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: Lessons.map((l, idx) => ({
+      params: {
+        lesson: `${idx + 1}`,
+      },
+    })),
+    fallback: false,
+  };
 };
 
 export default LessonPage;

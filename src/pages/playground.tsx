@@ -18,8 +18,9 @@ import {
   compressToEncodedURIComponent,
   decompressFromEncodedURIComponent,
 } from "lz-string";
-import { NextPage, NextPageContext } from "next";
+import { NextPage } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import * as React from "react";
 import { DynamicEditor } from "../components/dynamicEditor";
 import { PlaygroundWorkflows } from "../playground/workflows";
@@ -32,10 +33,24 @@ const defaultEvents: Event[] = [
   },
 ];
 
-const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
+const PlaygroundPage: NextPage = () => {
+  const { query } = useRouter();
+
+  React.useEffect(() => {
+    const w: string | undefined = query.w as string;
+    console.log(w);
+    if (w) {
+      const workflowText = decompressFromEncodedURIComponent(w);
+      setSelectedWorkflow({
+        name: "Custom",
+        workflow: workflowText,
+      });
+      setInput(workflowText);
+    }
+  }, [query]);
+
   const [selectedWorkflow, setSelectedWorkflow] = React.useState(
-    (w && { name: "Custom", workflow: decompressFromEncodedURIComponent(w) }) ||
-      PlaygroundWorkflows[0]
+    PlaygroundWorkflows[0]
   );
   const [input, setInput] = React.useState(selectedWorkflow.workflow);
   const [copied, setCopied] = React.useState(false);
@@ -169,13 +184,5 @@ const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
     </div>
   );
 };
-
-export async function getServerSideProps(context: NextPageContext) {
-  return {
-    props: {
-      w: context.query["w"] || null,
-    },
-  };
-}
 
 export default PlaygroundPage;
