@@ -4,20 +4,25 @@ import {
   ChevronDownIcon,
   ClippyIcon,
 } from "@primer/octicons-v2-react";
+import {
+  Event,
+  ExpressionError,
+  parse,
+  ParseError,
+  run,
+  RuntimeModel,
+  WorkflowExecution,
+} from "github-actions-interpreter";
 import { YAMLException } from "js-yaml";
 import {
   compressToEncodedURIComponent,
   decompressFromEncodedURIComponent,
 } from "lz-string";
-import { NextPage, NextPageContext } from "next";
+import { NextPage } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import * as React from "react";
 import { DynamicEditor } from "../components/dynamicEditor";
-import { WorkflowExecution } from "../components/workflowExecution/workflowExecution";
-import { ExpressionError } from "../lib/expressions";
-import { parse, ParseError } from "../lib/parser/parser";
-import { run } from "../lib/runner/runner";
-import { Event, RuntimeModel } from "../lib/runtimeModel";
 import { PlaygroundWorkflows } from "../playground/workflows";
 import { wait } from "../utils/wait";
 
@@ -28,10 +33,24 @@ const defaultEvents: Event[] = [
   },
 ];
 
-const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
+const PlaygroundPage: NextPage = () => {
+  const { query } = useRouter();
+
+  React.useEffect(() => {
+    const w: string | undefined = query.w as string;
+    console.log(w);
+    if (w) {
+      const workflowText = decompressFromEncodedURIComponent(w);
+      setSelectedWorkflow({
+        name: "Custom",
+        workflow: workflowText,
+      });
+      setInput(workflowText);
+    }
+  }, [query]);
+
   const [selectedWorkflow, setSelectedWorkflow] = React.useState(
-    (w && { name: "Custom", workflow: decompressFromEncodedURIComponent(w) }) ||
-      PlaygroundWorkflows[0]
+    PlaygroundWorkflows[0]
   );
   const [input, setInput] = React.useState(selectedWorkflow.workflow);
   const [copied, setCopied] = React.useState(false);
@@ -152,7 +171,7 @@ const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
         )}
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center flex-wrap">
+      <div className="flex-1 bg-gray-300 p-3 h-screen overflow-auto flex flex-row justify-center flex-wrap">
         {defaultEvents.map((event, idx) => (
           <WorkflowExecution
             key={event.event}
@@ -165,13 +184,5 @@ const PlaygroundPage: NextPage<{ w?: string }> = ({ w }) => {
     </div>
   );
 };
-
-export async function getServerSideProps(context: NextPageContext) {
-  return {
-    props: {
-      w: context.query["w"] || null,
-    },
-  };
-}
 
 export default PlaygroundPage;

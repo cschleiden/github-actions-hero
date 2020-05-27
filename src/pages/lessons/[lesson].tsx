@@ -1,20 +1,24 @@
 import { ButtonPrimary, Flash, Pagination } from "@primer/components";
+import {
+  Event,
+  ExpressionError,
+  parse,
+  ParseError,
+  run,
+  RuntimeContexts,
+  RuntimeModel,
+  WorkflowExecution,
+} from "github-actions-interpreter";
 import { YAMLException } from "js-yaml";
-import { NextPage } from "next";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Link from "next/link";
 import Router from "next/router";
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { DynamicEditor } from "../../components/dynamicEditor";
-import { WorkflowExecution } from "../../components/workflowExecution/workflowExecution";
 import { Lessons } from "../../lessons";
 import { lessonSolved } from "../../lessons/lesson";
-import { ExpressionError } from "../../lib/expressions";
-import { RuntimeContexts } from "../../lib/expressions/evaluator";
-import { parse, ParseError } from "../../lib/parser/parser";
-import { run } from "../../lib/runner/runner";
-import { Event, RuntimeModel } from "../../lib/runtimeModel";
 
 function _run(
   events: Event[],
@@ -183,7 +187,7 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
         </div>
       </div>
 
-      <div className="flex-1 bg-gray-300 h-screen overflow-auto flex flex-row justify-center flex-wrap">
+      <div className="flex-1 bg-gray-300 p-3 h-screen overflow-auto flex flex-row justify-center flex-wrap">
         {workflowExecution &&
           l.events.map((event, idx) => (
             <WorkflowExecution
@@ -198,10 +202,21 @@ const LessonPage: NextPage<{ lesson: number }> = ({ lesson }) => {
   );
 };
 
-LessonPage.getInitialProps = (context) => {
-  const lesson = parseInt(context.query["lesson"] as string, 10);
+export const getStaticProps: GetStaticProps = async (context) => {
+  const lesson = parseInt(context.params["lesson"] as string, 10);
 
-  return { lesson };
+  return { props: { lesson } };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: Lessons.map((l, idx) => ({
+      params: {
+        lesson: `${idx + 1}`,
+      },
+    })),
+    fallback: false,
+  };
 };
 
 export default LessonPage;
