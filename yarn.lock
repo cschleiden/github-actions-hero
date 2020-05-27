@@ -4141,10 +4141,10 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
-github-actions-interpreter@^0.5.1-0:
-  version "0.5.1-0"
-  resolved "https://registry.yarnpkg.com/github-actions-interpreter/-/github-actions-interpreter-0.5.1-0.tgz#6dc1934dbf1d2a68328769145f5f5adf58701767"
-  integrity sha512-nTuNLXD20nL3thBSZWxK79pYbt/FieOcLb+X6B2IMPsEROCC9WqRoWssVeVVRFbTdMG5h8yiofdxmpsfA+icpA==
+github-actions-interpreter@0.5.1-1:
+  version "0.5.1-1"
+  resolved "https://registry.yarnpkg.com/github-actions-interpreter/-/github-actions-interpreter-0.5.1-1.tgz#e9b2fdb756e016aaeb9c98b2155aabf6cf1a6db6"
+  integrity sha512-6thk9Txa9p7V367t1cAweCfjYUQ237gcGXVMtMRQN74Fl3otr+sX/o1BrHt6/2YAMZBDJ4CC4A6fP39xXsGDJw==
   dependencies:
     "@primer/octicons-v2-react" "0.0.0-dd899ea"
     ajv "^6.12.2"
@@ -7419,7 +7419,7 @@ react-is@16.10.2:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.10.2.tgz#984120fd4d16800e9a738208ab1fba422d23b5ab"
   integrity sha512-INBT1QEgtcCCgvccr5/86CfD71fw9EPmDxgiJX4I2Ddr6ZsV6iFXsuby+qWJPtmNuMY0zByTsG4468P7nHuNWA==
 
-react-is@16.13.1, react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
+react-is@16.13.1, react-is@^16.12.0, react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
