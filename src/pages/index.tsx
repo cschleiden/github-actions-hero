@@ -3,7 +3,7 @@ import Link from "next/link";
 import * as React from "react";
 import { Badge } from "../components/badge";
 
-export default () => {
+export default function indexPage() {
   return (
     <div className="flex flex-1 flex-col justify-center items-center h-screen">
       <Badge />
@@ -36,4 +36,4 @@ export default () => {
       </div>
     </div>
   );
-};
+}

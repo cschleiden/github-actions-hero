@@ -1,4 +1,12 @@
 import { Lesson } from "./lesson";
+import { ResultLesson12 as Result, MatrixJob, Lesson12Name } from "../types";
+
+const getLenghtOfName = (
+  matrix: MatrixJob<Lesson12Name, string>[],
+  name: Lesson12Name
+) => {
+  return matrix.filter((j) => j.name.indexOf(name) !== -1).length;
+};
 
 export const matrixJob: Lesson = {
   title: `Matrix job`,
@@ -24,11 +32,25 @@ jobs:
     },
   ],
 
-  success: (r) =>
-    r.every(
-      (x) =>
-        x.jobs.length === 6 &&
-        x.jobs.filter((j) => j.name.indexOf("frontend") !== -1).length === 3 &&
-        x.jobs.filter((j) => j.name.indexOf("backend") !== -1).length === 3
-    ),
+  success: (r: Result[]) => {
+    const matrixLengthShouldBe = 6;
+    const numberOfFeJobsShouldBe = 3;
+    const numberOfBeJobsShouldBe = 3;
+    // there should only be one job.
+
+    const job = r[0].jobs[0];
+
+    const matrix = job.matrixJobs;
+    const matrixLength = matrix.length;
+
+    const feJobsLength = getLenghtOfName(matrix, "frontend");
+
+    const beJobsLength = getLenghtOfName(matrix, "backend");
+
+    return (
+      matrixLength === matrixLengthShouldBe &&
+      numberOfFeJobsShouldBe === feJobsLength &&
+      numberOfBeJobsShouldBe === beJobsLength
+    );
+  },
 };

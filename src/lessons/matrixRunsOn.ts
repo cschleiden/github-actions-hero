@@ -1,4 +1,18 @@
 import { Lesson } from "./lesson";
+import {
+  ResultLesson13 as Result,
+  Lesson13RunnerLabel,
+  MatrixJob,
+} from "../types";
+
+const getLengthOfLabel = (
+  matrix: MatrixJob<string, Lesson13RunnerLabel>[],
+  label: Lesson13RunnerLabel
+) => {
+  return matrix.filter(
+    (j) => j.runnerLabel.length === 1 && j.runnerLabel.includes(label)
+  ).length;
+};
 
 export const matrixRunsOn: Lesson = {
   title: `Matrix runs-on`,
@@ -24,21 +38,25 @@ jobs:
     },
   ],
 
-  success: (r) =>
-    r.every(
-      (x) =>
-        x.jobs.length === 3 &&
-        x.jobs.filter(
-          (j) =>
-            j.runnerLabel?.length > 0 && j.runnerLabel[0] === "ubuntu-latest"
-        ).length === 1 &&
-        x.jobs.filter(
-          (j) =>
-            j.runnerLabel?.length > 0 && j.runnerLabel[0] === "windows-latest"
-        ).length === 1 &&
-        x.jobs.filter(
-          (j) =>
-            j.runnerLabel?.length > 0 && j.runnerLabel[0] === "macos-latest"
-        ).length === 1
-    ),
+  success: (r: Result[]) => {
+    const matrixLengthShouldBe = 3;
+    const numberOfJobsSHouldBe = 1;
+
+    // there should only be one job.
+    const job = r[0].jobs[0];
+
+    const matrix = job.matrixJobs;
+    const matrixLength = matrix.length;
+
+    const numberOfUbuntuJobs = getLengthOfLabel(matrix, "ubuntu-latest");
+    const numberOfMacosJobs = getLengthOfLabel(matrix, "macos-latest");
+    const numberOfWindowsJobs = getLengthOfLabel(matrix, "windows-latest");
+
+    return (
+      matrixLength === matrixLengthShouldBe &&
+      numberOfUbuntuJobs === numberOfJobsSHouldBe &&
+      numberOfMacosJobs === numberOfJobsSHouldBe &&
+      numberOfWindowsJobs === numberOfJobsSHouldBe
+    );
+  },
 };
