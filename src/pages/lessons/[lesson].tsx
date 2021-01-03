@@ -1,23 +1,25 @@
+import * as React from "react";
+
 import { ButtonPrimary, Flash, Pagination } from "@primer/components";
 import {
   Event,
   ExpressionError,
-  parse,
   ParseError,
-  run,
   RuntimeContexts,
   RuntimeModel,
   WorkflowExecution,
-} from "github-actions-interpreter";
-import { YAMLException } from "js-yaml";
+  parse,
+  run,
+} from "../../github-actions-interpreter";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import Link from "next/link";
-import Router from "next/router";
-import * as React from "react";
-import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+
 import { DynamicEditor } from "../../components/dynamicEditor";
 import { Lessons } from "../../lessons";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import Router from "next/router";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { YAMLException } from "js-yaml";
 import { lessonSolved } from "../../lessons/lesson";
 
 function _run(

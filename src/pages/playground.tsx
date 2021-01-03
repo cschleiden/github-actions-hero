@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { Button, Flash, SelectMenu, Tooltip } from "@primer/components";
 import {
   CheckIcon,
@@ -7,23 +9,23 @@ import {
 import {
   Event,
   ExpressionError,
-  parse,
   ParseError,
-  run,
   RuntimeModel,
   WorkflowExecution,
-} from "github-actions-interpreter";
-import { YAMLException } from "js-yaml";
+  parse,
+  run,
+} from "../github-actions-interpreter";
 import {
   compressToEncodedURIComponent,
   decompressFromEncodedURIComponent,
 } from "lz-string";
-import { NextPage } from "next";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import * as React from "react";
+
 import { DynamicEditor } from "../components/dynamicEditor";
+import Link from "next/link";
+import { NextPage } from "next";
 import { PlaygroundWorkflows } from "../playground/workflows";
+import { YAMLException } from "js-yaml";
+import { useRouter } from "next/router";
 import { wait } from "../utils/wait";
 
 const defaultEvents: Event[] = [

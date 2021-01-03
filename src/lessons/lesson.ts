@@ -3,7 +3,7 @@ import {
   RuntimeContexts,
   RuntimeModel,
   StepType,
-} from "github-actions-interpreter";
+} from "../github-actions-interpreter";
 
 export interface Lesson {
   /**

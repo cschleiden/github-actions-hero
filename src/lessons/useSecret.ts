@@ -1,5 +1,5 @@
-import { StepType } from "github-actions-interpreter";
 import { Lesson } from "./lesson";
+import { StepType } from "../github-actions-interpreter";
 
 const DeploymentKey = "aGVsbG8hIHRoaXMgaXMgYSB2ZXJ5IHNlY3JldCB0b2tlbg==";
 

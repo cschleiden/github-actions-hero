@@ -1,5 +1,5 @@
-import { StepType } from "github-actions-interpreter";
 import { Lesson } from "./lesson";
+import { StepType } from "../github-actions-interpreter";
 
 export const skipStepIf: Lesson = {
   title: `Skip Step`,

@@ -9,9 +9,9 @@
   "dependencies": {
     "@primer/components": "18.1.0",
     "@primer/octicons-v2-react": "0.0.0-dd899ea",
+    "chevrotain": "^7.1.0",
     "codemirror": "^5.53.2",
     "codemirror-github-dark": "^0.4.1",
-    "github-actions-interpreter": "0.5.1-1",
     "github-markdown-css": "^4.0.0",
     "lz-string": "^1.4.4",
     "next": "^9.4.0",
