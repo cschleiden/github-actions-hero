@@ -14,7 +14,7 @@
     "codemirror-github-dark": "^0.4.1",
     "github-markdown-css": "^4.0.0",
     "lz-string": "^1.4.4",
-    "next": "^9.4.0",
+    "next": "^11.1.3",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-codemirror2": "^7.1.0",
