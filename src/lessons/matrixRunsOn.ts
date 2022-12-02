@@ -23,22 +23,17 @@ jobs:
       event: "push",
     },
   ],
-
   success: (r) =>
     r.every(
       (x) =>
-        x.jobs.length === 3 &&
-        x.jobs.filter(
-          (j) =>
-            j.runnerLabel?.length > 0 && j.runnerLabel[0] === "ubuntu-latest"
-        ).length === 1 &&
-        x.jobs.filter(
-          (j) =>
-            j.runnerLabel?.length > 0 && j.runnerLabel[0] === "windows-latest"
-        ).length === 1 &&
-        x.jobs.filter(
-          (j) =>
-            j.runnerLabel?.length > 0 && j.runnerLabel[0] === "macos-latest"
-        ).length === 1
+        x.jobs.length === 1 &&
+        x.jobs[0].matrixJobs?.length === 3 &&
+        x.jobs[0].matrixJobs.find((j) =>
+          j.runnerLabel.includes("ubuntu-latest")
+        ) &&
+        x.jobs[0].matrixJobs.find((j) =>
+          j.runnerLabel.includes("windows-latest")
+        ) &&
+        x.jobs[0].matrixJobs.find((j) => j.runnerLabel.includes("macos-latest"))
     ),
 };
