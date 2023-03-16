@@ -27,8 +27,9 @@ jobs:
   success: (r) =>
     r.every(
       (x) =>
-        x.jobs.length === 6 &&
-        x.jobs.filter((j) => j.name.indexOf("frontend") !== -1).length === 3 &&
-        x.jobs.filter((j) => j.name.indexOf("backend") !== -1).length === 3
+        x.jobs.length === 1 &&
+        x.jobs[0].matrixJobs?.length === 6 &&
+        x.jobs[0].matrixJobs?.filter((j) => j.name.indexOf("frontend") !== -1).length === 3 &&
+        x.jobs[0].matrixJobs?.filter((j) => j.name.indexOf("backend") !== -1).length === 3
     ),
 };
