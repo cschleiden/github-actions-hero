@@ -2,7 +2,7 @@ import { Lesson } from "./lesson";
 
 export const runOnPush: Lesson = {
   title: `Run on push`,
-  description: `Workflows [run](https://help.github.com/en/actions/reference/events-that-trigger-workflows#about-workflow-events) when a specific activity happens on GitHub, at a scheduled time, or when an event outside of GitHub occurs.
+  description: `Workflows [run](https://help.github.com/en/actions/reference/events-that-trigger-workflows) when a specific activity happens on GitHub, at a scheduled time, or when an event outside of GitHub occurs.
 
 Every workflow declares which event should trigger it by setting [\`on\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#on) to a string identifying an event.
 

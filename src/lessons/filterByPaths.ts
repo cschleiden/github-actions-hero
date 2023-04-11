@@ -3,7 +3,7 @@ import { Lesson } from "./lesson";
 export const filterByPaths: Lesson = {
   title: `Filter by paths`,
 
-  description: `In addition to filtering by activities and branches you can also run workflows when specific files are changed - or not - with the [\`paths\` and \`paths-ignore\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths) properties.
+  description: `In addition to filtering by activities and branches you can also run workflows when specific files are changed - or not - with the [\`paths\` and \`paths-ignore\`](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore) properties.
 
 For this lesson, a workflow to optimize images should be run whenever a \`push\` to the repository includes \`.jpg\` files in the \`photos\` directory and not, when pictures are pushed in other locations.`,
 
