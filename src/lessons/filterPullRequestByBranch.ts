@@ -3,7 +3,7 @@ import { Lesson } from "./lesson";
 export const filterPullRequestByBranch: Lesson = {
   title: `Validate pull requests`,
 
-  description: `We have seen that workflows can run when a single event, or when one of multiple events happens. It is also possible to limit workflow execution to certain [branches or tags](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestbranchestags).
+  description: `We have seen that workflows can run when a single event, or when one of multiple events happens. It is also possible to limit workflow execution to certain [branches](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpull_requestpull_request_targetbranchesbranches-ignore) or [tags](hthttps://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushbranchestagsbranches-ignoretags-ignore).
 
 This workflow should run only when a \`pull_request\` to the \`master\` branch is opened.
 `,
