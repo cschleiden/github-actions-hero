@@ -5,7 +5,7 @@ export const useCheckoutAction: Lesson = {
 
   description: `In most cases you want to do something with the content of your repository. To get a copy of the repository you can use the \`actions/checkout\` action.
 
-Add a [\`uses\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsuses) step that uses \`actions/checkout\` version \`v2\`:`,
+Add a [\`uses\`](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsuses) step that uses \`actions/checkout\` version \`v3\`:`,
 
   workflow: `name: Checkout
 
@@ -25,5 +25,5 @@ jobs:
     },
   ],
 
-  success: `actions/checkout@v2`,
+  success: `actions/checkout@v3`,
 };

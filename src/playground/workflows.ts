@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: ./build.sh
 
   test:
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [with-optional-step]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: echo "Hello"
     - run: echo "World"
     - run: echo "Step with expression name"

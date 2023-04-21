@@ -18,14 +18,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: ./build.sh
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
 %    if: 1 == 1%
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: ./deploy.sh
 `,
 
