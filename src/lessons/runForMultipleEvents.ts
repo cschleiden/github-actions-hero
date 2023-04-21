@@ -5,7 +5,7 @@ export const runForMultipleEvents: Lesson = {
 
   description: `Workflows can also run when any of [multiple events](https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#using-multiple-events) occur.
 
-Currently this workflow runs on every \`push\`, update it so that is also runs whenever any of the \`issues\` in the repository is modified.`,
+Currently this workflow runs on every \`push\`, update it so that it also runs whenever any of the \`issues\` in the repository is modified.`,
 
   workflow: `name: Multiple Events
 
